@@ -329,24 +329,17 @@ namespace klft {
       return plaq;
     }
 
-    KOKKOS_INLINE_FUNCTION void operator()(wloop_temporal_obc_s, const int &t, T &wloop_temporal_obc) const
+    T wloop_obc(const int &x0, const int &y0, const int &z0, const int &mu, const int &nu, const int &Lmu, const int &Lnu, bool Normalize = true)
     {
-      Group U1, U2, U3, U4;
-      const int x0 = 0;//(int)(LX / 2);
-      const int y0 = 0;//(int)(LY / 2);
-      const int z0 = 0;//(int)(LZ / 2);
-      int R_side = 1;
-      int T_side = 1;
-      const int mu = Ndim - 1;
-
-      #pragma unroll
-      for (int nu = 0; nu < mu; ++nu)
-      {
+      auto BulkPolicy = Kokkos::RangePolicy<>(0, this->get_max_dim(3));
+      T wloop_obc = 0.0;
+      Kokkos::parallel_reduce("wloop_obc", BulkPolicy, KOKKOS_CLASS_LAMBDA(const int &t, T &wloop_obc_local) {
+        Group U1, U2, U3, U4;
         Kokkos::Array<int, 4> site = {x0, y0, z0, t};
 
         U1.set_identity();
         #pragma unroll
-        for (int t_it = 0; t_it < T_side; t_it++)
+        for (int i = 0; i < Lmu; i++)
         {
           U1 *= this->get_link(site, mu);
           site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1);
@@ -354,7 +347,7 @@ namespace klft {
 
         U2.set_identity();
         #pragma unroll
-        for (int r_it = 0; r_it < R_side; r_it++)
+        for (int j = 0; j < Lnu; j++)
         {
           U2 *= this->get_link(site, nu);
           site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
@@ -363,7 +356,7 @@ namespace klft {
         U4.set_identity();
         Kokkos::Array<int,4> site2 = {x0, y0, z0, t};
         #pragma unroll
-        for (int r_it = 0; r_it < R_side; r_it++)
+        for (int j = 0; j < Lnu; j++)
         {
           U4 *= this->get_link(site2, nu);
           site2[this->array_dims[nu]] = (site2[this->array_dims[nu]] + 1);
@@ -371,23 +364,28 @@ namespace klft {
 
         U3.set_identity();
         #pragma unroll
-        for (int t_it = 0; t_it < T_side; t_it++)
+        for (int i = 0; i < Lmu; i++)
         {
           U3 *= this->get_link(site2, mu);
           site2[this->array_dims[mu]] = (site2[this->array_dims[mu]] + 1);
         }
 
-        wloop_temporal_obc += (U1 * U2 * dagger(U3) * dagger(U4)).retrace();
-      }
+        wloop_obc_local += (U1 * U2 * dagger(U3) * dagger(U4)).retrace();
+      }, wloop_obc);
+      if (Normalize)
+        wloop_obc /= this->get_max_dim(3) * Nc;
+      return wloop_obc;
     }
 
-    T get_wloop_temporal_obc(bool Normalize = true)
-    {
-      auto BulkPolicy = Kokkos::RangePolicy<wloop_temporal_obc_s>(0, this->get_max_dim(3));
+    T wloop_temporal_obc(const int &x0, const int &y0, const int &z0, const int &Lmu, const int &Lnu, bool Normalize = true){
       T wloop_temporal_obc = 0.0;
-      Kokkos::parallel_reduce("wloop_temporal_obc", BulkPolicy, *this, wloop_temporal_obc);
-      if (Normalize)
-        wloop_temporal_obc /= this->get_max_dim(3) * (Ndim - 1) * Nc;
+      const int mu = Ndim - 1;
+      #pragma unroll
+      for (int nu = 0; nu < mu; ++nu){
+        wloop_temporal_obc += wloop_obc(x0, y0, z0, mu, nu, Lmu, Lnu, Normalize);
+      }
+      if(Normalize)
+        wloop_temporal_obc /= (Ndim - 1);
       return wloop_temporal_obc;
     }
 
