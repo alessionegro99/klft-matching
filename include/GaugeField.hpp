@@ -446,29 +446,10 @@ namespace klft {
         }
 
         wloop_np_obc_local += (U1 * U2 * U3 * dagger(U4) * dagger(U5) * dagger(U6)).retrace();
-        
-        U6.set_identity();
-        site = {x0, y0, z0, t};
-        #pragma unroll
-        for (int k = 0; k < Lrho; k++)
-        {
-          U6 *= this->get_link(site, rho);
-          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1);
-        }
-
-        U5.set_identity();
-        #pragma unroll
-        for (int j = 0; j < Lnu; j++)
-        {
-          U5 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
-        }
-
-        wloop_np_obc_local += (U1 * U2 * U3 * dagger(U4) * dagger(U5) * dagger(U6)).retrace();
 
       }, wloop_np_obc);
       if (Normalize)
-        wloop_np_obc /= this->get_max_dim(3) * Nc * 2;
+        wloop_np_obc /= this->get_max_dim(3) * Nc;
       return wloop_np_obc;
     }
 
