@@ -2,6 +2,7 @@
 #include "../include/Metropolis.hpp"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 namespace klft {
 
@@ -67,7 +68,7 @@ namespace klft {
   void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT, 
                          const size_t &n_hit, const T &beta, const T &delta,
                          const size_t &seed, const size_t &n_sweep, const bool cold_start,
-                         const std::string &outfilename, const bool open_bc[3]) {
+                         const std::string &outfilename, const bool open_bc[3], const int v0[3]) {
     std::cout << "Running Metropolis_U1_3D" << std::endl;
     std::cout << "Gauge Field Dimensions:" << std::endl;
     std::cout << "LX = " << LX << std::endl;
@@ -81,10 +82,24 @@ namespace klft {
     std::cout << "seed = " << seed << std::endl;
     std::cout << "start condition = " << (cold_start ? "cold" : "hot") << std::endl;
     std::cout << "output file = " << outfilename << std::endl;
+    std::cout << "x0 = " << v0[0] << std::endl;
+    std::cout << "y0 = " << v0[1] << std::endl;
+    std::cout << "z0 = " << v0[2] << std::endl;
     std::ofstream outfile;
     if(outfilename != "") {
       outfile.open(outfilename);
-      outfile << "step, plaquette, acceptance_rate, time, wloop_temporal" << std::endl;
+      outfile << "step plaquette acceptance_rate time ";
+/*       for(int i = 1; i + std::max(v0[0], v0[1]) < std::min(LX, LY); i++){
+        for(int j = 1; j < LT; j++){
+          outfile << "Wt(" << i << ", " << j << ") "; 
+        }
+      } */
+      for(int j = 1; j < LT; j++){
+        outfile << "Wt(R = " << 1 << ", T = " << j << ") ";
+        outfile << "Wt(R = " << sqrt(2) << ", T = " << j << ") "; 
+        outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") "; 
+      }
+      outfile << std::endl;
     }
     Kokkos::initialize();
     {
@@ -97,8 +112,10 @@ namespace klft {
       metropolis.initGauge(cold_start);
       if(open_bc[0]) gauge_field.set_open_bc_x();
       if(open_bc[1]) gauge_field.set_open_bc_y();
-      std::cout << "Starting Plaquette: " << gauge_field.get_plaquette() << std::endl;
-      std::cout << "Starting Wloop_temporal: " << gauge_field.get_wloop_temporal() << std::endl;
+      if(open_bc[0] && open_bc[1])
+        std::cout << "Starting Plaquette: " << gauge_field.get_plaquette_obc() << std::endl;
+      else
+        std::cout << "Starting Plaquette: " << gauge_field.get_plaquette() << std::endl;
       std::cout << "Starting Metropolis: " << std::endl;
       auto metropolis_start_time = std::chrono::high_resolution_clock::now();
       for(size_t i = 0; i < n_sweep; i++) {
@@ -108,17 +125,26 @@ namespace klft {
         T wloop_temporal = 0.0;
         if(open_bc[0] && open_bc[1]){
           plaquette = gauge_field.get_plaquette_obc();
-          wloop_temporal = gauge_field.get_wloop_temporal_obc();
         }
         else{
           plaquette = gauge_field.get_plaquette();
-          wloop_temporal = gauge_field.get_wloop_temporal();
         }
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> sweep_time = end_time - start_time;
-        std::cout << "Step: " << i << " Plaquette: " << plaquette << " Acceptance Rate: " << acceptance_rate << " Time: " << sweep_time.count() << " W_temporal: " << wloop_temporal << std::endl;
+        std::cout << "Step: " << i << " Plaquette: " << plaquette << " Acceptance Rate: " << acceptance_rate << " Time: " << sweep_time.count() << std::endl;
         if(outfilename != "") {
-            outfile << i << ", " << plaquette << ", " << acceptance_rate << ", " << sweep_time.count() << ", " << wloop_temporal << std::endl;
+            outfile << i << " " << plaquette << " " << acceptance_rate << " " << sweep_time.count();
+/*             for(int i = 1; i + std::max(v0[0], v0[1]) < std::min(LX, LY); i++){
+              for(int j = 1; j < LT; j++){
+                outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, i);
+              }
+            } */
+            for(int j = 1; j < LT; j++){
+              outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1);
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1);
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2);
+            }            
+            outfile << std::endl;
         }
       }
     auto metropolis_end_time = std::chrono::high_resolution_clock::now();
@@ -197,12 +223,12 @@ namespace klft {
   template void Metropolis_U1_3D<float>(const size_t &LX, const size_t &LY, const size_t &LT, 
                                         const size_t &n_hit, const float &beta, const float &delta,
                                         const size_t &seed, const size_t &n_sweep, const bool cold_start,
-                                        const std::string &outfilename, const bool open_bc[3]);
+                                        const std::string &outfilename, const bool open_bc[3], const int v0[3]);
 
   template void Metropolis_U1_3D<double>(const size_t &LX, const size_t &LY, const size_t &LT,
                                          const size_t &n_hit, const double &beta, const double &delta,
                                          const size_t &seed, const size_t &n_sweep, const bool cold_start,
-                                         const std::string &outfilename, const bool open_bc[3]);;
+                                         const std::string &outfilename, const bool open_bc[3], const int v0[3]);;
 
   template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
                                         const size_t &n_hit, const float &beta, const float &delta,
