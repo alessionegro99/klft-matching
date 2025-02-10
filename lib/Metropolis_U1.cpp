@@ -79,6 +79,7 @@ namespace klft {
     std::cout << "delta = " << delta << std::endl;
     std::cout << "n_hit = " << n_hit << std::endl;
     std::cout << "n_sweep = " << n_sweep << std::endl;
+    std::cout << "n_meas = " << n_meas << std::endl;
     std::cout << "seed = " << seed << std::endl;
     std::cout << "start condition = " << (cold_start ? "cold" : "hot") << std::endl;
     std::cout << "output file = " << outfilename << std::endl;
@@ -113,7 +114,7 @@ namespace klft {
         std::cout << "Starting Plaquette: " << gauge_field.get_plaquette() << std::endl;
       std::cout << "Starting Metropolis: " << std::endl;
       auto metropolis_start_time = std::chrono::high_resolution_clock::now();
-      for(size_t i = 0; i < n_sweep; i++) {
+      for(int i = 0; i < n_sweep; i++) {
         auto start_time = std::chrono::high_resolution_clock::now();
         T acceptance_rate = metropolis.sweep();
         T plaquette = 0.0;
@@ -128,8 +129,8 @@ namespace klft {
         std::chrono::duration<double> sweep_time = end_time - start_time;
         std::cout << "Step: " << i << " Plaquette: " << plaquette << " Acceptance Rate: " << acceptance_rate << " Time: " << sweep_time.count() << std::endl;
         if(outfilename != "") {
-          if(i%n_meas!=0){
-            outfile << i << " " << plaquette << " " << acceptance_rate << " " << sweep_time.count();
+          if(!((i+1)%n_meas) || (i==(n_sweep-1))){
+            outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " " << sweep_time.count();
             for(int j = 1; j <= LT; j++){
               outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1);
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1);
