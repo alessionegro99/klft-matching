@@ -15,11 +15,15 @@ int main(int argc, char **argv) {
   real_t delta = 0.05;
   size_t seed = 1234;
   size_t n_sweep = 1000;
+  size_t n_meas = 100;
   bool cold_start = true;
   std::string outfilename = "";
   bool open_bc_x = false;
   bool open_bc_y = false;
   bool open_bc_z = false;
+  int x0 = 0;
+  int y0 = 0; 
+  int z0 = 0;
   for(int i = 1; i < argc; i++) {
     if(std::string(argv[i]) == "--gauge-group") {
       gauge_group = argv[i+1];
@@ -54,6 +58,9 @@ int main(int argc, char **argv) {
     if(std::string(argv[i]) == "--n-sweep") {
       n_sweep = std::stoi(argv[i+1]);
     }
+    if(std::string(argv[i]) == "--n-meas") {
+      n_meas = std::stoi(argv[i+1]);
+    }
     if(std::string(argv[i]) == "--cold-start") {
       cold_start = std::string(argv[i+1]) == "true";
     }
@@ -69,6 +76,15 @@ int main(int argc, char **argv) {
     if(std::string(argv[i]) == "--open-bc-z") {
       open_bc_z = std::string(argv[i+1]) == "true";
     }
+    if(std::string(argv[i]) == "--x0") {
+      x0 = std::stoi(argv[i+1]);
+    }
+    if(std::string(argv[i]) == "--y0") {
+      y0 = std::stoi(argv[i+1]);
+    }
+    if(std::string(argv[i]) == "--z0") {
+      z0 = std::stoi(argv[i+1]);
+    }
     if(std::string(argv[i]) == "--help") {
       std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
       std::cout << "Options:" << std::endl;
@@ -83,20 +99,24 @@ int main(int argc, char **argv) {
       std::cout << "--delta step size" << std::endl;
       std::cout << "--seed random number generator seed" << std::endl;
       std::cout << "--n-sweep number of sweeps" << std::endl;
+      std::cout << "--n-meas number of measurements" << std::endl;
       std::cout << "--cold-start true or false" << std::endl;
       std::cout << "--outfilename output filename" << std::endl;
       std::cout << "--open-bc-x true or false" << std::endl;
       std::cout << "--open-bc-y true or false" << std::endl;
       std::cout << "--open-bc-z true or false" << std::endl;
+      std::cout << "--(x0, y0, z0) starting point for OBC Wloop" << std::endl;
+
       return 0;
     }
   }
   bool open_bc[3] = {open_bc_x, open_bc_y, open_bc_z};
+  int v0[3] = {x0, y0, z0};
   // if(gauge_group == "SU2" && ndim == 4) klft::Metropolis_SU2_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   // if(gauge_group == "SU2" && ndim == 3) klft::Metropolis_SU2_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   // if(gauge_group == "SU2" && ndim == 2) klft::Metropolis_SU2_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   if(gauge_group == "U1" && ndim == 4) klft::Metropolis_U1_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  if(gauge_group == "U1" && ndim == 3) klft::Metropolis_U1_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  if(gauge_group == "U1" && ndim == 3) klft::Metropolis_U1_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,n_meas,cold_start,outfilename,open_bc,v0);
   if(gauge_group == "U1" && ndim == 2) klft::Metropolis_U1_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   // if(gauge_group == "SU3" && ndim == 4) klft::Metropolis_SU3_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   // if(gauge_group == "SU3" && ndim == 3) klft::Metropolis_SU3_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);

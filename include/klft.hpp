@@ -29,7 +29,7 @@ namespace klft {
   template <typename T>
   void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT, 
                         const size_t &n_hit, const T &beta, const T &delta,
-                        const size_t &seed, const size_t &n_sweep, const bool cold_start,
+                        const size_t &seed, const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
                         const std::string &outfilename, const bool open_bc[3], const int v0[3]);
 
   template <typename T>
