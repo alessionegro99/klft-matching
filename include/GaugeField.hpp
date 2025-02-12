@@ -342,7 +342,7 @@ namespace klft {
         for (int i = 0; i < Lmu; i++)
         {
           U1 *= this->get_link(site, mu);
-          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1);
+          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1) % this->dims[mu];
         }
 
         U2.set_identity();
@@ -350,7 +350,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U2 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
         }
 
         U4.set_identity();
@@ -359,7 +359,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U4 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
         }
 
         U3.set_identity();
@@ -367,7 +367,7 @@ namespace klft {
         for (int i = 0; i < Lmu; i++)
         {
           U3 *= this->get_link(site, mu);
-          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1);
+          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1) % this->dims[mu];
         }
 
         wloop_obc_local += (U1 * U2 * dagger(U3) * dagger(U4)).retrace();
@@ -402,7 +402,7 @@ namespace klft {
         for (int i = 0; i < Lmu; i++)
         {
           U1 *= this->get_link(site, mu);
-          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1);
+          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1) % this->dims[mu];
         }
 
         U2.set_identity();
@@ -410,14 +410,14 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U2 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
         }
 
         U3.set_identity();
         #pragma unroll
         for (int k = 0; k < Lrho; k++){
           U3 *= this->get_link(site, rho);
-          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1);
+          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1) % this->dims[rho];
         }
 
         U6.set_identity();
@@ -426,7 +426,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U6 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
         }
 
         U5.set_identity();
@@ -434,7 +434,7 @@ namespace klft {
         for (int k = 0; k < Lrho; k++)
         {
           U5 *= this->get_link(site, rho);
-          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1);
+          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1) % this->dims[rho];
         }
 
         U4.set_identity();
@@ -442,7 +442,7 @@ namespace klft {
         for (int i = 0; i < Lmu; i++)
         {
           U4 *= this->get_link(site, mu);
-          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1);
+          site[this->array_dims[mu]] = (site[this->array_dims[mu]] + 1) % this->dims[mu];
         }
 
         wloop_np_obc_local += (U1 * U2 * U3 * dagger(U4) * dagger(U5) * dagger(U6)).retrace();
