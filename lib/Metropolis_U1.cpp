@@ -90,10 +90,10 @@ namespace klft {
     if(outfilename != "") {
       outfile.open(outfilename);
       outfile << "step plaquette acceptance_rate time ";
-      for(int j = 1; j <= LT; j++){
+      for(int j = 1; j < LT; j++){
         outfile << "Wt(R = " << 1 << ", T = " << j << ") ";
         outfile << "Wt(R = " << sqrt(2) << ", T = " << j << ") "; 
-        outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") "; 
+        outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") ";
       }
       outfile << std::endl;
     }
@@ -131,7 +131,7 @@ namespace klft {
         if(outfilename != "") {
           if(!((i+1)%n_meas) || (i==(n_sweep-1))){
             outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " " << sweep_time.count();
-            for(int j = 1; j <= LT; j++){
+            for(int j = 1; j < LT; j++){
               outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1);
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1);
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2);
