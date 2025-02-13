@@ -389,6 +389,7 @@ namespace klft {
       return wloop_temporal_obc;
     }
 
+      //change name and fix %operatorion
     T wloop_np_obc(const int &x0, const int &y0, const int &z0, const int &mu, const int &nu, const int &rho, const int &Lmu, const int &Lnu, const int &Lrho, bool Normalize = true)
     {
       auto BulkPolicy = Kokkos::RangePolicy<>(0, this->get_max_dim(3));
@@ -456,6 +457,7 @@ namespace klft {
     T wloop_np_temporal_obc(const int &x0, const int &y0, const int &z0, const int &Lmu, const int &Lnu, const int &Lrho, bool Normalize = true){
       T wloop_np_temporal_obc = 0.0;
       const int mu = Ndim - 1;
+
       #pragma unroll
       for (int nu = 0; nu < mu; ++nu){
         for (int rho = 0; rho < nu; ++rho){
