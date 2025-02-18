@@ -93,8 +93,22 @@ namespace klft {
       for(int j = 1; j < LT; j++){
         outfile << "Wt(R = " << 1 << ", T = " << j << ") ";
         outfile << "Wt(R = " << sqrt(2) << ", T = " << j << ") "; 
-        outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") ";
-        outfile << "Wt(R = " << sqrt(8) << ", T = " << j << ") ";
+        if(LX >= 3 && LY >= 3)
+        {
+          outfile << "Wt(R = " << 2 << ", T = " << j << ") ";
+          outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") ";
+          outfile << "Wt(R = " << sqrt(8) << ", T = " << j << ") ";
+        }
+        if(LX >= 4 && LY >= 4)
+        {
+          outfile << "Wt(R = " << sqrt(10) << ", T = " << j << ") ";
+          outfile << "Wt(R = " << sqrt(18) << ", T = " << j << ") ";
+        }
+        if(LX >= 5 && LY >= 5)
+        {
+          outfile << "Wt(R = " << 5 << ", T = " << j << ") ";
+          outfile << "Wt(R = " << sqrt(32) << ", T = " << j << ") ";
+        }
       }
       outfile << std::endl;
     }
@@ -133,10 +147,24 @@ namespace klft {
           if(!((i+1)%n_meas) || (i==(n_sweep-1))){
             outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " " << sweep_time.count();
             for(int j = 1; j < LT; j++){
-              outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1);
-              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1);
-              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2);
-              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2);
+              outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1); // r = 1
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1); // r = sqrt(2)
+              if(LX >= 3 && LY >= 3)
+              {
+              outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 2); // r = 2
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2); // r = sqrt(5)
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2); // r = sqrt(8)
+              }
+              if(LX >= 4 && LY >= 4)
+              {
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2); // r = sqrt(10)
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 3, 3); // r = sqrt(18)
+              }
+              if(LX >= 5 && LY >= 5)
+              {
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 3, 4); // r = 5
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 4, 4); // r = sqrt(32)
+              }
             }            
             outfile << std::endl;
           }
