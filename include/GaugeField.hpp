@@ -339,11 +339,6 @@ namespace klft {
         Group U1, U2, U3, U4;
         Kokkos::Array<int, 4> site = {x0, y0, z0, t};
 
-        if((this->dims[nu] - (site[nu] + Lnu)) <= 0){
-          std::cerr << "Planar loop does not fit into the lattice. Aborting..." << std::endl;
-          std::exit(EXIT_FAILURE);
-        }
-
         U1.set_identity();
         #pragma unroll
         for (int i = 0; i < Lmu; i++)
@@ -405,11 +400,6 @@ namespace klft {
       Kokkos::parallel_reduce("wloop_np_obc", BulkPolicy, KOKKOS_CLASS_LAMBDA(const int &t, T &wloop_np_obc_local) {
         Group U1, U2, U3, U4, U5, U6;
         Kokkos::Array<int, 4> site = {x0, y0, z0, t};
-
-        if(((this->dims[nu] - (site[nu] + Lnu)) <= 0) || ((this->dims[rho] - (site[rho] + Lrho)) <= 0)){
-          std::cerr << "Non-planar loop does not fit into the lattice. Aborting..." << std::endl;
-          std::exit(EXIT_FAILURE);
-        }
 
         U1.set_identity();
         #pragma unroll
