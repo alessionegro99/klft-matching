@@ -1,5 +1,7 @@
 #pragma once
 #include "GaugeGroup.hpp"
+#include <iostream>
+#include <cstdlib>
 
 namespace klft {
 
@@ -337,6 +339,11 @@ namespace klft {
         Group U1, U2, U3, U4;
         Kokkos::Array<int, 4> site = {x0, y0, z0, t};
 
+        if((this->dims[nu] - (site[nu] + Lnu)) <= 0){
+          std::cerr << "Planar loop does not fit into the lattice. Aborting..." << std::endl;
+          std::exit(EXIT_FAILURE);
+        }
+
         U1.set_identity();
         #pragma unroll
         for (int i = 0; i < Lmu; i++)
@@ -350,7 +357,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U2 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
         }
 
         U4.set_identity();
@@ -359,7 +366,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U4 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
         }
 
         U3.set_identity();
@@ -394,9 +401,15 @@ namespace klft {
     {
       auto BulkPolicy = Kokkos::RangePolicy<>(0, this->get_max_dim(3));
       T wloop_np_obc = 0.0;
+
       Kokkos::parallel_reduce("wloop_np_obc", BulkPolicy, KOKKOS_CLASS_LAMBDA(const int &t, T &wloop_np_obc_local) {
         Group U1, U2, U3, U4, U5, U6;
         Kokkos::Array<int, 4> site = {x0, y0, z0, t};
+
+        if(((this->dims[nu] - (site[nu] + Lnu)) <= 0) || ((this->dims[rho] - (site[rho] + Lrho)) <= 0)){
+          std::cerr << "Non-planar loop does not fit into the lattice. Aborting..." << std::endl;
+          std::exit(EXIT_FAILURE);
+        }
 
         U1.set_identity();
         #pragma unroll
@@ -411,14 +424,14 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U2 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
         }
 
         U3.set_identity();
         #pragma unroll
         for (int k = 0; k < Lrho; k++){
           U3 *= this->get_link(site, rho);
-          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1) % this->dims[rho];
+          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1);
         }
 
         U6.set_identity();
@@ -427,7 +440,7 @@ namespace klft {
         for (int j = 0; j < Lnu; j++)
         {
           U6 *= this->get_link(site, nu);
-          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          site[this->array_dims[nu]] = (site[this->array_dims[nu]] + 1);
         }
 
         U5.set_identity();
@@ -435,7 +448,7 @@ namespace klft {
         for (int k = 0; k < Lrho; k++)
         {
           U5 *= this->get_link(site, rho);
-          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1) % this->dims[rho];
+          site[this->array_dims[rho]] = (site[this->array_dims[rho]] + 1);
         }
 
         U4.set_identity();

@@ -94,6 +94,7 @@ namespace klft {
         outfile << "Wt(R = " << 1 << ", T = " << j << ") ";
         outfile << "Wt(R = " << sqrt(2) << ", T = " << j << ") "; 
         outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") ";
+        outfile << "Wt(R = " << sqrt(8) << ", T = " << j << ") ";
       }
       outfile << std::endl;
     }
@@ -135,6 +136,7 @@ namespace klft {
               outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 1);
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1);
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2);
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2);
             }            
             outfile << std::endl;
           }
