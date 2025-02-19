@@ -157,7 +157,7 @@ namespace klft {
               }
               if(LX >= 4 && LY >= 4)
               {
-              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2); // r = sqrt(10)
+              outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 3, 1); // r = sqrt(10)
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 3, 3); // r = sqrt(18)
               }
               if(LX >= 5 && LY >= 5)
