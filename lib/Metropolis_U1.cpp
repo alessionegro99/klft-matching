@@ -95,6 +95,7 @@ namespace klft {
         outfile << "Wt(R = " << sqrt(2) << ", T = " << j << ") "; 
         if(LX >= 3 && LY >= 3)
         {
+          outfile << "Wt(R = " << 2 << ", T = " << j << ") ";
           outfile << "Wt(R = " << sqrt(5) << ", T = " << j << ") ";
           outfile << "Wt(R = " << sqrt(8) << ", T = " << j << ") ";
         }
@@ -166,6 +167,7 @@ namespace klft {
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 1); // r = sqrt(2)
               if(LX >= 3 && LY >= 3)
               {
+              outfile << " " << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2], j, 2); // r = 2
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 1, 2); // r = sqrt(5)
               outfile << " " << gauge_field.wloop_np_temporal_obc(v0[0], v0[1], v0[2], j, 2, 2); // r = sqrt(8)
               }
