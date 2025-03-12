@@ -101,26 +101,25 @@ namespace klft
     if (outfilename != "")
     {
       outfile.open(outfilename);
-      outfile << "Running Metropolis_U1_3D" ;
-      outfile << "Gauge Field Dimensions:" ;
-      outfile << "LX = " << LX ;
-      outfile << "LY = " << LY ;
-      outfile << "LT = " << LT ;
-      outfile << "Metropolis Parameters:" ;
-      outfile << "beta = " << beta ;
-      outfile << "delta = " << delta ;
-      outfile << "n_hit = " << n_hit ;
-      outfile << "n_sweep = " << n_sweep ;
-      outfile << "n_meas = " << n_meas ;
-      outfile << "seed = " << seed ;
-      outfile << "start condition = " << (cold_start ? "cold" : "hot") ;
-      outfile << "output file = " << outfilename ;
-      outfile << "x0 = " << v0[0] ;
-      outfile << "y0 = " << v0[1] ;
-      outfile << "z0 = " << v0[2] ;
-      outfile << "max R Wilson loop = " << max_R_Wilson_loop ;
-      outfile << "verbose output = " << verbose ;
-      outfile << "step plaquette acceptance_rate time ";
+      outfile << "Running Metropolis_U1_3D" << "\n" ;
+      outfile << "Gauge Field Dimensions:" << "\n" ;
+      outfile << "LX = " << LX << "\n" ;
+      outfile << "LY = " << LY << "\n" ;
+      outfile << "LT = " << LT << "\n" ;
+      outfile << "Metropolis Parameters:" << "\n" ;
+      outfile << "beta = " << beta << "\n" ;
+      outfile << "delta = " << delta << "\n" ;
+      outfile << "n_hit = " << n_hit << "\n" ;
+      outfile << "n_sweep = " << n_sweep << "\n" ;
+      outfile << "n_meas = " << n_meas << "\n" ;
+      outfile << "seed = " << seed << "\n" ;
+      outfile << "start condition = " << (cold_start ? "cold" : "hot") <<  "\n" ;
+      outfile << "output file = " << outfilename << "\n" ;
+      outfile << "x0 = " << v0[0] << "\n" ;
+      outfile << "y0 = " << v0[1] << "\n" ;
+      outfile << "z0 = " << v0[2] << "\n" ;
+      outfile << "max R Wilson loop = " << max_R_Wilson_loop <<  "\n" ;
+      outfile << "verbose output = " << verbose << "\n" ;
       for (int j = 1; j < LT; j++)
       {
         for (int k = 1; k < std::min(LX, LY); k++)
