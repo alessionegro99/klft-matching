@@ -101,6 +101,25 @@ namespace klft
     if (outfilename != "")
     {
       outfile.open(outfilename);
+      outfile << "Running Metropolis_U1_3D" ;
+      outfile << "Gauge Field Dimensions:" ;
+      outfile << "LX = " << LX ;
+      outfile << "LY = " << LY ;
+      outfile << "LT = " << LT ;
+      outfile << "Metropolis Parameters:" ;
+      outfile << "beta = " << beta ;
+      outfile << "delta = " << delta ;
+      outfile << "n_hit = " << n_hit ;
+      outfile << "n_sweep = " << n_sweep ;
+      outfile << "n_meas = " << n_meas ;
+      outfile << "seed = " << seed ;
+      outfile << "start condition = " << (cold_start ? "cold" : "hot") ;
+      outfile << "output file = " << outfilename ;
+      outfile << "x0 = " << v0[0] ;
+      outfile << "y0 = " << v0[1] ;
+      outfile << "z0 = " << v0[2] ;
+      outfile << "max R Wilson loop = " << max_R_Wilson_loop ;
+      outfile << "verbose output = " << verbose ;
       outfile << "step plaquette acceptance_rate time ";
       for (int j = 1; j < LT; j++)
       {
