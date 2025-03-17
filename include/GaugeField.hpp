@@ -383,7 +383,7 @@ namespace klft {
       T wloop_temporal_obc = 0.0;
       const int mu = Ndim - 1;
       #pragma unroll
-      for (int nu = 0; nu < mu; ++nu){
+      for (int nu = 0; nu < mu; nu++){
         wloop_temporal_obc += wloop_obc(x0, y0, z0, mu, nu, Lmu, Lnu, Normalize);
       }
       if(Normalize)
