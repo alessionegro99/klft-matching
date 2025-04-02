@@ -194,13 +194,21 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
         if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
           outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " "
                   << sweep_time.count();
-          for (int j = 1; j < LT; j++) {
-            for (int k = 1; k < std::min(LX, LY); k++) {
-              for (int l = 0; l <= k; l++) {
-                if (sqrt(k * k + l * l) < max_R_Wilson_loop)
-                  outfile << " "
-                          << gauge_field.wloop_np_temporal_obc(v0[0], v0[1],
-                                                               v0[2], j, k, l);
+          for (int j = 1; j < std::min(LT, max_T_Wilson_loop); j++) {
+            if (non_planar) {
+              for (int k = 1; k < std::min(LX, LY); k++) {
+                for (int l = 0; l <= k; l++) {
+                  if (sqrt(k * k + l * l) < max_R_Wilson_loop)
+                    outfile << " "
+                            << gauge_field.wloop_np_temporal_obc(
+                                   v0[0], v0[1], v0[2], j, k, l);
+                }
+              }
+            } else if (non_planar == false) {
+              for (int k = 1; k < std::min({LX, LY, max_R_Wilson_loop}); k++) {
+                outfile << " "
+                        << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
+                                                          j, k);
               }
             }
           }
