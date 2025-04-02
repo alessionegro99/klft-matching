@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     if (std::string(argv[i]) == "--z0") {
       z0 = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--non-planar") {
+    if (std::string(argv[i]) == "--non-planar") {
       non_planar = std::string(argv[i + 1]) == "true";
     }
     if (std::string(argv[i]) == "--max_T_Wilson_loop") {
@@ -130,8 +130,8 @@ int main(int argc, char **argv) {
       return 0;
     }
   }
-  bool open_bc[3] = {open_bc_x, open_bc_y, open_bc_z, open_bc_t};
-  int v0[3] = {x0, y0, z0, t0};
+  bool open_bc[3] = {open_bc_x, open_bc_y, open_bc_z};
+  int v0[3] = {x0, y0, z0};
   // if(gauge_group == "SU2" && ndim == 4)
   // klft::Metropolis_SU2_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   // if(gauge_group == "SU2" && ndim == 3)
@@ -144,7 +144,8 @@ int main(int argc, char **argv) {
   if (gauge_group == "U1" && ndim == 3)
     klft::Metropolis_U1_3D<real_t>(LX, LY, LT, n_hit, beta, delta, seed,
                                    n_sweep, n_meas, cold_start, outfilename,
-                                   open_bc, v0, max_T_Wilson_loop, max_R_Wilson_loop, verbose);
+                                   open_bc, v0, non_planar, max_T_Wilson_loop,
+                                   max_R_Wilson_loop, verbose);
   if (gauge_group == "U1" && ndim == 2)
     klft::Metropolis_U1_2D<real_t>(LX, LT, n_hit, beta, delta, seed, n_sweep,
                                    cold_start, outfilename, open_bc);

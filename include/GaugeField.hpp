@@ -160,22 +160,6 @@ public:
         });
   }
 
-  void set_open_bc_t() {
-    if (Ndim < 4)
-      return;
-    auto BulkPolicy = Kokkos::MDRangePolicy<Kokkos::Rank<3>>(
-        {0, 0, 0},
-        {this->get_max_dim(0), this->get_max_dim(1), this->get_max_dim(2)});
-    Kokkos::parallel_for(
-        "set_open_bc_t", BulkPolicy,
-        KOKKOS_CLASS_LAMBDA(const int &x, const int &y, const int &z) {
-#pragma unroll
-          for (int i = 0; i < Nc * Nc; i++) {
-            this->gauge[3][i](x, y, z, this->max_dims[3] - 1) =
-                Kokkos::complex<T>(0.0, 0.0);
-          }
-        });
-  }
   KOKKOS_FUNCTION int get_array_dim(const int &mu) const {
     return this->array_dims[mu];
   }

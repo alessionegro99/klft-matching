@@ -49,8 +49,6 @@ void Metropolis_U1_4D(const size_t &LX, const size_t &LY, const size_t &LZ,
       gauge_field.set_open_bc_y();
     if (open_bc[2])
       gauge_field.set_open_bc_z();
-    if (open_bc[3])
-      gauge_field.set_open_bc_t();
     std::cout << "Starting Plaquette: " << gauge_field.get_plaquette()
               << std::endl;
     std::cout << "Starting Metropolis: " << std::endl;
@@ -131,7 +129,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     outfile << "max T Wilson loop = " << max_T_Wilson_loop << "\n";
     outfile << "max R Wilson loop = " << max_R_Wilson_loop << "\n";
     outfile << "verbose output = " << verbose << "\n";
-    for (int j = 1; j < std::min(LT, max_T_Wilson_loop); j++) {
+    for (int j = 1; j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
+         j++) {
       if (non_planar) {
         for (int k = 1; k < std::min(LX, LY); k++) {
           for (int l = 0; l <= k; l++) {
@@ -141,7 +140,9 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
           }
         }
       } else if (non_planar == false) {
-        for (int k = 1; k < std::min({LX, LY, max_R_Wilson_loop}); k++) {
+        for (int k = 1;
+             k < std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+             k++) {
           outfile << "Wt(R = " << k << ", T = " << j << ") ";
         }
       }
@@ -163,8 +164,6 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
       gauge_field.set_open_bc_x();
     if (open_bc[1])
       gauge_field.set_open_bc_y();
-    if (open_bc[3])
-      gauge_field.set_open_bc_t();
     if (open_bc[0] && open_bc[1])
       std::cout << "Starting Plaquette: " << gauge_field.get_plaquette_obc()
                 << std::endl;
@@ -194,7 +193,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
         if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
           outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " "
                   << sweep_time.count();
-          for (int j = 1; j < std::min(LT, max_T_Wilson_loop); j++) {
+          for (int j = 1;
+               j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop)); j++) {
             if (non_planar) {
               for (int k = 1; k < std::min(LX, LY); k++) {
                 for (int l = 0; l <= k; l++) {
@@ -205,7 +205,10 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                 }
               }
             } else if (non_planar == false) {
-              for (int k = 1; k < std::min({LX, LY, max_R_Wilson_loop}); k++) {
+              for (int k = 1;
+                   k <
+                   std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+                   k++) {
                 outfile << " "
                         << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
                                                           j, k);
@@ -306,16 +309,16 @@ template void Metropolis_U1_3D<float>(
     const float &beta, const float &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
     const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const int &max_T_Wilson_loop, const int &max_R_Wilson_loop,
-    const bool &verbose);
+    const bool non_planar, const int &max_T_Wilson_loop,
+    const int &max_R_Wilson_loop, const bool &verbose);
 
 template void Metropolis_U1_3D<double>(
     const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
     const double &beta, const double &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
     const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const int &max_T_wilson_loop, const int &max_R_Wilson_loop,
-    const bool &verbose);
+    const bool non_planar, const int &max_T_wilson_loop,
+    const int &max_R_Wilson_loop, const bool &verbose);
 ;
 
 template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
