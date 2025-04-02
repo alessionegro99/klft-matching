@@ -1,0 +1,25 @@
+# Ignore CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore compiled binaries and libraries
+*.exe
+*.out
+*.app
+*.dylib
+*.so
+*.dll
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore CMake user-specific files
+CMakeUserPresets.json

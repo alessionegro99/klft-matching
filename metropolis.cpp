@@ -21,79 +21,83 @@ int main(int argc, char **argv) {
   bool open_bc_x = false;
   bool open_bc_y = false;
   bool open_bc_z = false;
+  bool open_bc_t = false;
   int x0 = 0;
-  int y0 = 0; 
+  int y0 = 0;
   int z0 = 0;
   int max_R_Wilson_loop = 0;
   bool verbose = false;
-  for(int i = 1; i < argc; i++) {
-    if(std::string(argv[i]) == "--gauge-group") {
-      gauge_group = argv[i+1];
+  for (int i = 1; i < argc; i++) {
+    if (std::string(argv[i]) == "--gauge-group") {
+      gauge_group = argv[i + 1];
     }
-    if(std::string(argv[i]) == "--ndim") {
-      ndim = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--ndim") {
+      ndim = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--LX") {
-      LX = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--LX") {
+      LX = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--LY") {
-      LY = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--LY") {
+      LY = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--LZ") {
-      LZ = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--LZ") {
+      LZ = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--LT") {
-      LT = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--LT") {
+      LT = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--n-hit") {
-      n_hit = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--n-hit") {
+      n_hit = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--beta") {
-      beta = std::stod(argv[i+1]);
+    if (std::string(argv[i]) == "--beta") {
+      beta = std::stod(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--delta") {
-      delta = std::stod(argv[i+1]);
+    if (std::string(argv[i]) == "--delta") {
+      delta = std::stod(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--seed") {
-      seed = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--seed") {
+      seed = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--n-sweep") {
-      n_sweep = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--n-sweep") {
+      n_sweep = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--n-meas") {
-      n_meas = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--n-meas") {
+      n_meas = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--cold-start") {
-      cold_start = std::string(argv[i+1]) == "true";
+    if (std::string(argv[i]) == "--cold-start") {
+      cold_start = std::string(argv[i + 1]) == "true";
     }
-    if(std::string(argv[i]) == "--outfilename") {
-      outfilename = argv[i+1];
+    if (std::string(argv[i]) == "--outfilename") {
+      outfilename = argv[i + 1];
     }
-    if(std::string(argv[i]) == "--open-bc-x") {
-      open_bc_x = std::string(argv[i+1]) == "true";
+    if (std::string(argv[i]) == "--open-bc-x") {
+      open_bc_x = std::string(argv[i + 1]) == "true";
     }
-    if(std::string(argv[i]) == "--open-bc-y") {
-      open_bc_y = std::string(argv[i+1]) == "true";
+    if (std::string(argv[i]) == "--open-bc-y") {
+      open_bc_y = std::string(argv[i + 1]) == "true";
     }
-    if(std::string(argv[i]) == "--open-bc-z") {
-      open_bc_z = std::string(argv[i+1]) == "true";
+    if (std::string(argv[i]) == "--open-bc-z") {
+      open_bc_z = std::string(argv[i + 1]) == "true";
     }
-    if(std::string(argv[i]) == "--x0") {
-      x0 = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--open-bc-t") {
+      open_bc_t = std::string(argv[i + 1]) == "true";
     }
-    if(std::string(argv[i]) == "--y0") {
-      y0 = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--x0") {
+      x0 = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--z0") {
-      z0 = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--y0") {
+      y0 = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--max_R_Wilson_loop") {
-      max_R_Wilson_loop = std::stoi(argv[i+1]);
+    if (std::string(argv[i]) == "--z0") {
+      z0 = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--verbose") {
-      verbose = std::string(argv[i+1]) == "true";
+    if (std::string(argv[i]) == "--max_R_Wilson_loop") {
+      max_R_Wilson_loop = std::stoi(argv[i + 1]);
     }
-    if(std::string(argv[i]) == "--help") {
+    if (std::string(argv[i]) == "--verbose") {
+      verbose = std::string(argv[i + 1]) == "true";
+    }
+    if (std::string(argv[i]) == "--help") {
       std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
       std::cout << "Options:" << std::endl;
       std::cout << "--gauge-group SU3, SU2 or U1" << std::endl;
@@ -120,16 +124,29 @@ int main(int argc, char **argv) {
       return 0;
     }
   }
-  bool open_bc[3] = {open_bc_x, open_bc_y, open_bc_z};
-  int v0[3] = {x0, y0, z0};
-  // if(gauge_group == "SU2" && ndim == 4) klft::Metropolis_SU2_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU2" && ndim == 3) klft::Metropolis_SU2_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU2" && ndim == 2) klft::Metropolis_SU2_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  if(gauge_group == "U1" && ndim == 4) klft::Metropolis_U1_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  if(gauge_group == "U1" && ndim == 3) klft::Metropolis_U1_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,n_meas,cold_start,outfilename,open_bc,v0,max_R_Wilson_loop,verbose);
-  if(gauge_group == "U1" && ndim == 2) klft::Metropolis_U1_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU3" && ndim == 4) klft::Metropolis_SU3_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU3" && ndim == 3) klft::Metropolis_SU3_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU3" && ndim == 2) klft::Metropolis_SU3_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  bool open_bc[4] = {open_bc_x, open_bc_y, open_bc_z, open_bc_t};
+  int v0[4] = {x0, y0, z0, t0};
+  // if(gauge_group == "SU2" && ndim == 4)
+  // klft::Metropolis_SU2_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  // if(gauge_group == "SU2" && ndim == 3)
+  // klft::Metropolis_SU2_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  // if(gauge_group == "SU2" && ndim == 2)
+  // klft::Metropolis_SU2_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  if (gauge_group == "U1" && ndim == 4)
+    klft::Metropolis_U1_4D<real_t>(LX, LY, LZ, LT, n_hit, beta, delta, seed,
+                                   n_sweep, cold_start, outfilename, open_bc);
+  if (gauge_group == "U1" && ndim == 3)
+    klft::Metropolis_U1_3D<real_t>(LX, LY, LT, n_hit, beta, delta, seed,
+                                   n_sweep, n_meas, cold_start, outfilename,
+                                   open_bc, v0, max_R_Wilson_loop, verbose);
+  if (gauge_group == "U1" && ndim == 2)
+    klft::Metropolis_U1_2D<real_t>(LX, LT, n_hit, beta, delta, seed, n_sweep,
+                                   cold_start, outfilename, open_bc);
+  // if(gauge_group == "SU3" && ndim == 4)
+  // klft::Metropolis_SU3_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  // if(gauge_group == "SU3" && ndim == 3)
+  // klft::Metropolis_SU3_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+  // if(gauge_group == "SU3" && ndim == 2)
+  // klft::Metropolis_SU3_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   return 0;
 }
