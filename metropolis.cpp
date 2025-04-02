@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     if (std::string(argv[i]) == "--z0") {
       z0 = std::stoi(argv[i + 1]);
     }
-    if (std::string(argv[i]) == "--non-planar") {
+    if (std::string(argv[i]) == "--non_planar") {
       non_planar = std::string(argv[i + 1]) == "true";
     }
     if (std::string(argv[i]) == "--max_T_Wilson_loop") {
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
       std::cout << "--open-bc-y true or false" << std::endl;
       std::cout << "--open-bc-z true or false" << std::endl;
       std::cout << "--(x0, y0, z0) starting point for OBC Wloop" << std::endl;
-      std::cout << "--non-planar Wilson loops true or false" << std::endl;
+      std::cout << "--non_planar Wilson loops true or false" << std::endl;
       std::cout << "--max_T_Wilson_loop maximum T for Wilson loop" << std::endl;
       std::cout << "--max_R_Wilson_loop maximum R for Wilson loop" << std::endl;
       std::cout << "--verbose true or false" << std::endl;

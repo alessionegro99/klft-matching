@@ -125,10 +125,11 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     outfile << "x0 = " << v0[0] << "\n";
     outfile << "y0 = " << v0[1] << "\n";
     outfile << "z0 = " << v0[2] << "\n";
-    outfile << "non-planar = " << non_planar << "\n";
+    outfile << "non_planar = " << non_planar << "\n";
     outfile << "max T Wilson loop = " << max_T_Wilson_loop << "\n";
     outfile << "max R Wilson loop = " << max_R_Wilson_loop << "\n";
     outfile << "verbose output = " << verbose << "\n";
+    outfile << "step plaquette acceptance_rate time ";
     for (int j = 1; j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
          j++) {
       if (non_planar) {
