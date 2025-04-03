@@ -82,8 +82,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                       const size_t &seed, const size_t &n_sweep,
                       const size_t &n_meas, const bool cold_start,
                       const std::string &outfilename, const bool open_bc[3],
-                      const int v0[3], const bool non_planar,
-                      const int &max_T_Wilson_loop,
+                      const bool open_bc_t, const int v0[3], const int t0,
+                      const bool non_planar, const int &max_T_Wilson_loop,
                       const int &max_R_Wilson_loop, const bool &verbose) {
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
@@ -103,11 +103,18 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   std::cout << "x0 = " << v0[0] << std::endl;
   std::cout << "y0 = " << v0[1] << std::endl;
   std::cout << "z0 = " << v0[2] << std::endl;
+  std::cout << "t0 = " << t0 << std::endl;
+  std::cout << "open_bc_x = " << open_bc[0] << std::endl;
+  std::cout << "open_bc_y = " << open_bc[1] << std::endl;
+  std::cout << "open_bc_z = " << open_bc[2] << std::endl;
+  std::cout << "open_bc_t = " << open_bc_t << std::endl;
+  std::cout << "non_planar = " << non_planar << std::endl;
+  std::cout << "max T Wilson loop = " << max_T_Wilson_loop << std::endl;
   std::cout << "max R Wilson loop = " << max_R_Wilson_loop << std::endl;
   std::cout << "verbose output = " << verbose << std::endl;
   std::ofstream outfile;
   if (outfilename != "") {
-    outfile.open(outfilename);
+    outfile.open(outfilename); // print all the parameters to the output file
     outfile << "Running Metropolis_U1_3D" << "\n";
     outfile << "Gauge Field Dimensions:" << "\n";
     outfile << "LX = " << LX << "\n";
@@ -125,30 +132,51 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     outfile << "x0 = " << v0[0] << "\n";
     outfile << "y0 = " << v0[1] << "\n";
     outfile << "z0 = " << v0[2] << "\n";
+    outfile << "t0 = " << t0 << "\n";
+    outfile << "open_bc_x = " << open_bc[0] << "\n";
+    outfile << "open_bc_y = " << open_bc[1] << "\n";
+    outfile << "open_bc_z = " << open_bc[2] << "\n";
+    outfile << "open_bc_t = " << open_bc_t << "\n";
     outfile << "non_planar = " << non_planar << "\n";
     outfile << "max T Wilson loop = " << max_T_Wilson_loop << "\n";
     outfile << "max R Wilson loop = " << max_R_Wilson_loop << "\n";
     outfile << "verbose output = " << verbose << "\n";
-    outfile << "step plaquette acceptance_rate time ";
-    for (int j = 1; j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
-         j++) {
-      if (non_planar) {
-        for (int k = 1; k < std::min(LX, LY); k++) {
-          for (int l = 0; l <= k; l++) {
-            if (sqrt(k * k + l * l) < max_R_Wilson_loop)
-              outfile << "Wt(R = " << sqrt(k * k + l * l) << ", T = " << j
-                      << ") ";
+
+    outfile << "step plaquette acceptance_rate time "; // printing measurement
+                                                       // header
+    if (open_bc[0] && open_bc[1]) {
+      for (int j = 1; j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
+           j++) {
+        if (non_planar) {
+          for (int k = 1; k < std::min(LX, LY); k++) {
+            for (int l = 0; l <= k; l++) {
+              if (sqrt(k * k + l * l) < max_R_Wilson_loop)
+                outfile << "Wt(R = " << sqrt(k * k + l * l) << ", T = " << j
+                        << ") ";
+            }
+          }
+        } else if (!non_planar) {
+          for (int k = 1;
+               k < std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+               k++) {
+            outfile << "Wt(R = " << k << ", T = " << j << ") ";
           }
         }
-      } else if (non_planar == false) {
-        for (int k = 1;
-             k < std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
-             k++) {
-          outfile << "Wt(R = " << k << ", T = " << j << ") ";
+      }
+      outfile << std::endl;
+    } else if (!open_bc[0] && !open_bc[1]) {
+      if (!non_planar) {
+        for (int j = 1;
+             j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop)); j++) {
+          for (int k = 1;
+               k < std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+               k++) {
+            outfile << "Wt(R = " << k << ", T = " << j << ") ";
+          }
         }
+        outfile << std::endl;
       }
     }
-    outfile << std::endl;
   }
   Kokkos::initialize();
   {
@@ -191,32 +219,35 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                   << " Time: " << sweep_time.count() << std::endl;
       }
       if (outfilename != "") {
-        if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
-          outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " "
-                  << sweep_time.count();
-          for (int j = 1;
-               j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop)); j++) {
-            if (non_planar) {
-              for (int k = 1; k < std::min(LX, LY); k++) {
-                for (int l = 0; l <= k; l++) {
-                  if (sqrt(k * k + l * l) < max_R_Wilson_loop)
-                    outfile << " "
-                            << gauge_field.wloop_np_temporal_obc(
-                                   v0[0], v0[1], v0[2], j, k, l);
+        if (open_bc[0] && open_bc[1]) {
+          if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
+            outfile << i + 1 << " " << plaquette << " " << acceptance_rate
+                    << " " << sweep_time.count();
+            for (int j = 1;
+                 j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
+                 j++) {
+              if (non_planar) {
+                for (int k = 1; k < std::min(LX, LY); k++) {
+                  for (int l = 0; l <= k; l++) {
+                    if (sqrt(k * k + l * l) < max_R_Wilson_loop)
+                      outfile << " "
+                              << gauge_field.wloop_np_temporal_obc(
+                                     v0[0], v0[1], v0[2], j, k, l);
+                  }
+                }
+              } else if (non_planar == false) {
+                for (int k = 1;
+                     k <
+                     std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+                     k++) {
+                  outfile << " "
+                          << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
+                                                            j, k);
                 }
               }
-            } else if (non_planar == false) {
-              for (int k = 1;
-                   k <
-                   std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
-                   k++) {
-                outfile << " "
-                        << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
-                                                          j, k);
-              }
             }
+            outfile << std::endl;
           }
-          outfile << std::endl;
         }
       }
     }
@@ -309,17 +340,19 @@ template void Metropolis_U1_3D<float>(
     const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
     const float &beta, const float &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const bool non_planar, const int &max_T_Wilson_loop,
-    const int &max_R_Wilson_loop, const bool &verbose);
+    const std::string &outfilename, const bool open_bc[3], const bool open_bc_t,
+    const int v0[3], const int t0, const bool non_planar,
+    const int &max_T_Wilson_loop, const int &max_R_Wilson_loop,
+    const bool &verbose);
 
 template void Metropolis_U1_3D<double>(
     const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
     const double &beta, const double &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const bool non_planar, const int &max_T_wilson_loop,
-    const int &max_R_Wilson_loop, const bool &verbose);
+    const std::string &outfilename, const bool open_bc[3], const bool open_bc_t,
+    const int v0[3], const int t0, const bool non_planar,
+    const int &max_T_wilson_loop, const int &max_R_Wilson_loop,
+    const bool &verbose);
 ;
 
 template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
