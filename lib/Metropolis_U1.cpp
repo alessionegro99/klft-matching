@@ -249,6 +249,23 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
             outfile << std::endl;
           }
         }
+        if (!open_bc[0] && !open_bc[1]) {
+          if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
+            outfile << i + 1 << " " << plaquette << " " << acceptance_rate
+                    << " " << sweep_time.count();
+            for (int j = 1;
+                 j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
+                 j++) {
+              for (int k = 1;
+                   k <
+                   std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
+                   k++) {
+                outfile << " " << gauge_field.wloop_temporal(j, k);
+              }
+            }
+            outfile << std::endl;
+          }
+        }
       }
     }
     auto metropolis_end_time = std::chrono::high_resolution_clock::now();

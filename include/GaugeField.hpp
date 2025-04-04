@@ -362,6 +362,73 @@ public:
     return staple;
   }
 
+  T wloop(const int &mu, const int &nu, const int &Lmu, const int &Lnu,
+          bool Normalize = true) {
+    auto BulkPolicy = Kokkos::MDRangePolicy<Kokkos::Rank<4>>(
+        {0, 0, 0, 0}, {this->get_max_dim(0), this->get_max_dim(1),
+                       this->get_max_dim(2), this->get_max_dim(3)});
+    T wloop = 0.0;
+    Kokkos::parallel_reduce(
+        "wloop", BulkPolicy,
+        KOKKOS_CLASS_LAMBDA(const int &x, const int &y, const int &z,
+                            const int &t, T &wloop_local) {
+          Group U1, U2, U3, U4;
+          Kokkos::Array<int, 4> site = {x, y, z, t};
+
+          U1.set_identity();
+#pragma unroll
+          for (int i = 0; i < Lmu; i++) {
+            U1 *= this->get_link(site, mu);
+            site[this->array_dims[mu]] =
+                (site[this->array_dims[mu]] + 1) % this->dims[mu];
+          }
+
+          U2.set_identity();
+#pragma unroll
+          for (int j = 0; j < Lnu; j++) {
+            U2 *= this->get_link(site, nu);
+            site[this->array_dims[nu]] =
+                (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          }
+
+          U4.set_identity();
+          site = {x, y, z, t};
+#pragma unroll
+          for (int j = 0; j < Lnu; j++) {
+            U4 *= this->get_link(site, nu);
+            site[this->array_dims[nu]] =
+                (site[this->array_dims[nu]] + 1) % this->dims[nu];
+          }
+
+          U3.set_identity();
+#pragma unroll
+          for (int i = 0; i < Lmu; i++) {
+            U3 *= this->get_link(site, mu);
+            site[this->array_dims[mu]] =
+                (site[this->array_dims[mu]] + 1) % this->dims[mu];
+          }
+
+          wloop_local += (U1 * U2 * dagger(U3) * dagger(U4)).retrace();
+        },
+        wloop);
+    if (Normalize)
+      wloop /= this->get_volume() * Nc;
+    return wloop;
+  }
+
+  T wloop_temporal(const int &Lmu, const int &Lnu,
+                       bool Normalize = true) {
+    T wloop_temporal = 0.0;
+    const int mu = Ndim - 1;
+#pragma unroll
+    for (int nu = 0; nu < mu; nu++) {
+      wloop_temporal += wloop(mu, nu, Lmu, Lnu, Normalize);
+    }
+    if (Normalize)
+      wloop_temporal /= (Ndim - 1);
+    return wloop_temporal;
+  }
+
   // obc related stuff
   KOKKOS_INLINE_FUNCTION void operator()(plaq_obc_s, const int &t,
                                          const int &mu, T &plaq) const {
