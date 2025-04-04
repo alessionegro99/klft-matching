@@ -235,7 +235,7 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                                      v0[0], v0[1], v0[2], j, k, l);
                   }
                 }
-              } else if (non_planar == false) {
+              } else if (!non_planar) {
                 for (int k = 1;
                      k <
                      std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
@@ -253,9 +253,9 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
           if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
             outfile << i + 1 << " " << plaquette << " " << acceptance_rate
                     << " " << sweep_time.count();
-            for (int j = 1;
-                 j < std::min(LT, static_cast<size_t>(max_T_Wilson_loop));
-                 j++) {
+            if (non_planar) {
+
+            } else if (!non_planar) {
               for (int k = 1;
                    k <
                    std::min({LX, LY, static_cast<size_t>(max_R_Wilson_loop)});
@@ -263,18 +263,19 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                 outfile << " " << gauge_field.wloop_temporal(j, k);
               }
             }
-            outfile << std::endl;
           }
+          outfile << std::endl;
         }
       }
     }
-    auto metropolis_end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> metropolis_time =
-        metropolis_end_time - metropolis_start_time;
-    std::cout << "Metropolis Time: " << metropolis_time.count() << std::endl;
   }
-  Kokkos::finalize();
-  outfile.close();
+  auto metropolis_end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> metropolis_time =
+      metropolis_end_time - metropolis_start_time;
+  std::cout << "Metropolis Time: " << metropolis_time.count() << std::endl;
+}
+Kokkos::finalize();
+outfile.close();
 }
 
 template <typename T>
