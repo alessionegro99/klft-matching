@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
   int z0 = 0;
   int t0 = 0;
   bool non_planar = false;
-  int max_T_Wilson_loop = 0;
-  int max_R_Wilson_loop = 0;
+  size_t max_T_Wilson_loop = 0;
+  size_t max_R_Wilson_loop = 0;
   bool verbose = false;
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--gauge-group") {
