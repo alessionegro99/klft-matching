@@ -259,8 +259,8 @@ public:
                                          const int &t,
                                          T &wloop_temporal) const {
     Group U1, U2, U3, U4;
-    int R_side = 1;
-    int T_side = 1;
+    int R_side = 3;
+    int T_side = 3;
     const int mu = Ndim - 1;
 
 #pragma unroll
