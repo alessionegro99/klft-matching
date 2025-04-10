@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     if (std::string(argv[i]) == "--help") {
       std::cout << "Usage: " << argv[0] << " [options]" << std::endl;
       std::cout << "Options:" << std::endl;
-      std::cout << "--gauge-group SU3, SU2 or U1" << std::endl;
+      std::cout << "--gauge-group U1" << std::endl;
       std::cout << "--ndim 2, 3, or 4" << std::endl;
       std::cout << "--LX lattice size in x direction" << std::endl;
       std::cout << "--LY lattice size in y direction" << std::endl;
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
       std::cout << "--open-bc-y true or false" << std::endl;
       std::cout << "--open-bc-z true or false" << std::endl;
       std::cout << "--open-bc-t true or false" << std::endl;
-      std::cout << "--x0(or y0, z0, t0) starting point for OBC Wloop"
+      std::cout << "--x0(y0, z0) starting point for OBC Wloop"
                 << std::endl;
       std::cout << "--non_planar Wilson loops true or false" << std::endl;
       std::cout << "--max_T_Wilson_loop maximum T for Wilson loop" << std::endl;

@@ -82,8 +82,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                       const size_t &seed, const size_t &n_sweep,
                       const size_t &n_meas, const bool cold_start,
                       const std::string &outfilename, const bool open_bc[3],
-                      const bool open_bc_t, const int v0[3], const int t0,
-                      const bool non_planar, const size_t &max_T_Wilson_loop,
+                      const int v0[3], const bool non_planar,
+                      const size_t &max_T_Wilson_loop,
                       const size_t &max_R_Wilson_loop, const bool &verbose) {
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
@@ -103,11 +103,9 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   std::cout << "x0 = " << v0[0] << std::endl;
   std::cout << "y0 = " << v0[1] << std::endl;
   std::cout << "z0 = " << v0[2] << std::endl;
-  std::cout << "t0 = " << t0 << std::endl;
   std::cout << "open_bc_x = " << open_bc[0] << std::endl;
   std::cout << "open_bc_y = " << open_bc[1] << std::endl;
   std::cout << "open_bc_z = " << open_bc[2] << std::endl;
-  std::cout << "open_bc_t = " << open_bc_t << std::endl;
   std::cout << "non_planar = " << non_planar << std::endl;
   std::cout << "max T Wilson loop = " << max_T_Wilson_loop << std::endl;
   std::cout << "max R Wilson loop = " << max_R_Wilson_loop << std::endl;
@@ -132,11 +130,9 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     outfile << "x0 = " << v0[0] << "\n";
     outfile << "y0 = " << v0[1] << "\n";
     outfile << "z0 = " << v0[2] << "\n";
-    outfile << "t0 = " << t0 << "\n";
     outfile << "open_bc_x = " << open_bc[0] << "\n";
     outfile << "open_bc_y = " << open_bc[1] << "\n";
     outfile << "open_bc_z = " << open_bc[2] << "\n";
-    outfile << "open_bc_t = " << open_bc_t << "\n";
     outfile << "non_planar = " << non_planar << "\n";
     outfile << "max T Wilson loop = " << max_T_Wilson_loop << "\n";
     outfile << "max R Wilson loop = " << max_R_Wilson_loop << "\n";
@@ -267,7 +263,6 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
   std::cout << "LX = " << LX << std::endl;
-  std::cout << "LY = " << LY << std::endl;
   std::cout << "LT = " << LT << std::endl;
   std::cout << "Metropolis Parameters:" << std::endl;
   std::cout << "beta = " << beta << std::endl;
@@ -278,13 +273,9 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   std::cout << "start condition = " << (cold_start ? "cold" : "hot")
             << std::endl;
   std::cout << "output file = " << outfilename << std::endl;
-  std::cout << "x0 = " << v0[0] << std::endl;
-  std::cout << "y0 = " << v0[1] << std::endl;
-  std::cout << "z0 = " << v0[2] << std::endl;
   std::cout << "open_bc_x = " << open_bc[0] << std::endl;
   std::cout << "open_bc_y = " << open_bc[1] << std::endl;
   std::cout << "open_bc_z = " << open_bc[2] << std::endl;
-  std::cout << "verbose output = " << verbose << std::endl;
   std::ofstream outfile;
   if (outfilename != "") {
     outfile.open(outfilename);
@@ -347,19 +338,17 @@ template void Metropolis_U1_3D<float>(
     const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
     const float &beta, const float &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const bool open_bc_t,
-    const int v0[3], const int t0, const bool non_planar,
-    const size_t &max_T_Wilson_loop, const size_t &max_R_Wilson_loop,
-    const bool &verbose);
+    const std::string &outfilename, const bool open_bc[3], const int v0[3],
+    const bool non_planar, const size_t &max_T_Wilson_loop,
+    const size_t &max_R_Wilson_loop, const bool &verbose);
 
 template void Metropolis_U1_3D<double>(
     const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
     const double &beta, const double &delta, const size_t &seed,
     const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const bool open_bc_t,
-    const int v0[3], const int t0, const bool non_planar,
-    const size_t &max_T_wilson_loop, const size_t &max_R_Wilson_loop,
-    const bool &verbose);
+    const std::string &outfilename, const bool open_bc[3], const int v0[3],
+    const bool non_planar, const size_t &max_T_wilson_loop,
+    const size_t &max_R_Wilson_loop, const bool &verbose);
 ;
 
 template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
