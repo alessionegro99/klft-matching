@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
   int y0 = 0;
   int z0 = 0;
   bool non_planar = false;
-  size_t max_T_Wilson_loop = 0;
-  size_t max_R_Wilson_loop = 0;
+  size_t Wt = 0;
+  size_t Ws = 0;
   bool verbose = false;
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--gauge-group") {
@@ -92,11 +92,11 @@ int main(int argc, char **argv) {
     if (std::string(argv[i]) == "--non_planar") {
       non_planar = std::string(argv[i + 1]) == "true";
     }
-    if (std::string(argv[i]) == "--max_T_Wilson_loop") {
-      max_T_Wilson_loop = std::stoi(argv[i + 1]);
+    if (std::string(argv[i]) == "--Wt") {
+      Wt = std::stoi(argv[i + 1]);
     }
-    if (std::string(argv[i]) == "--max_R_Wilson_loop") {
-      max_R_Wilson_loop = std::stoi(argv[i + 1]);
+    if (std::string(argv[i]) == "--Ws") {
+      Ws = std::stoi(argv[i + 1]);
     }
     if (std::string(argv[i]) == "--verbose") {
       verbose = std::string(argv[i + 1]) == "true";
@@ -122,11 +122,10 @@ int main(int argc, char **argv) {
       std::cout << "--open-bc-y true or false" << std::endl;
       std::cout << "--open-bc-z true or false" << std::endl;
       std::cout << "--open-bc-t true or false" << std::endl;
-      std::cout << "--x0(y0, z0) starting point for OBC Wloop"
-                << std::endl;
+      std::cout << "--x0(y0, z0) starting point for OBC Wloop" << std::endl;
       std::cout << "--non_planar Wilson loops true or false" << std::endl;
-      std::cout << "--max_T_Wilson_loop maximum T for Wilson loop" << std::endl;
-      std::cout << "--max_R_Wilson_loop maximum R for Wilson loop" << std::endl;
+      std::cout << "--Wt Wilson loop W(Ws,Wt)" << std::endl;
+      std::cout << "--Ws Wilson loop W(Ws,Wt)" << std::endl;
       std::cout << "--verbose true or false" << std::endl;
 
       return 0;
@@ -143,8 +142,7 @@ int main(int argc, char **argv) {
   if (gauge_group == "U1" && ndim == 3)
     klft::Metropolis_U1_3D<real_t>(LX, LY, LT, n_hit, beta, delta, seed,
                                    n_sweep, n_meas, cold_start, outfilename,
-                                   open_bc, v0, non_planar, max_T_Wilson_loop,
-                                   max_R_Wilson_loop, verbose);
+                                   open_bc, v0, non_planar, Wt, Ws, verbose);
 
   if (gauge_group == "U1" && ndim == 2)
     klft::Metropolis_U1_2D<real_t>(LX, LT, n_hit, beta, delta, seed, n_sweep,

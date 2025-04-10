@@ -11,7 +11,7 @@ make
 ```bash
 Usage: ./metropolis [options]
 Options:
---gauge-group SU2 or U1
+--gauge-group U1
 --ndim 2, 3, or 4
 --LX lattice size in x direction
 --LY lattice size in y direction
@@ -22,9 +22,16 @@ Options:
 --delta step size
 --seed random number generator seed
 --n-sweep number of sweeps
+--n-meas measure every ... sweeps
 --cold-start true or false
 --outfilename output filename
 --open-bc-x true or false
 --open-bc-y true or false
 --open-bc-z true or false
+--x0 X starting point for OBC observables
+--y0 Y ...
+--z0 Z ...
+--Wt Wilson loop W(Wt,Ws)
+--Ws Wilson loop W(Wt,Ws)
+--verbose verbose output true or false
 ```
