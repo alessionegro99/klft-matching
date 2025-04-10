@@ -144,10 +144,10 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     if (open_bc[0] && open_bc[1]) {
       for (int j = 1; j <= std::min(LT, Wt); j++) {
         if (non_planar) {
-          for (int k = 1; k <= std::min(LX, LY); k++) {
-            for (int l = 0; l < k; l++) {
+          for (int k = 1; k < std::min(LX, LY); k++) {
+            for (int l = 0; l <= k; l++) {
               if (sqrt(k * k + l * l) < Ws)
-                outfile << "W(Wt=" << j << ",Wt=" << sqrt(k * k + l * l)
+                outfile << "W(Wt=" << j << ",Ws=" << sqrt(k * k + l * l)
                         << ") ";
             }
           }
@@ -229,8 +229,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
           if (open_bc[0] && open_bc[1]) {
             for (int j = 1; j <= std::min(LT, Wt); j++) {
               if (non_planar) {
-                for (int k = 1; k <= std::min(LX, LY); k++) {
-                  for (int l = 0; l < k; l++) {
+                for (int k = 1; k < std::min(LX, LY); k++) {
+                  for (int l = 0; l <= k; l++) {
                     if (sqrt(k * k + l * l) < Ws)
                       outfile << " "
                               << gauge_field.wloop_np_temporal_obc(
