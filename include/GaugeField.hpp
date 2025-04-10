@@ -9,10 +9,8 @@ template <typename T, class Group, int Ndim = 4, int Nc = 3> class GaugeField {
 public:
   struct set_one_s {};
   struct plaq_s {};
-  struct wloop_temporal_s {};
-  // obc related operators
   struct plaq_obc_s {};
-  struct wloop_temporal_obc_s {};
+
   using complex_t = Kokkos::complex<T>;
   using DeviceView = Kokkos::View<complex_t ****>;
   // using HostView = typename DeviceView::HostMirror;
@@ -254,68 +252,6 @@ public:
     return plaq;
   }
 
-  KOKKOS_INLINE_FUNCTION void operator()(wloop_temporal_s, const int &x,
-                                         const int &y, const int &z,
-                                         const int &t,
-                                         T &wloop_temporal) const {
-    Group U1, U2, U3, U4;
-    int R_side = 3;
-    int T_side = 3;
-    const int mu = Ndim - 1;
-
-#pragma unroll
-    for (int nu = 0; nu < mu; ++nu) {
-      Kokkos::Array<int, 4> site = {x, y, z, t};
-
-      U1.set_identity();
-#pragma unroll
-      for (int t_it = 0; t_it < T_side; t_it++) {
-        U1 *= this->get_link(site, mu);
-        site[this->array_dims[mu]] =
-            (site[this->array_dims[mu]] + 1) % this->dims[mu];
-      }
-
-      U2.set_identity();
-#pragma unroll
-      for (int r_it = 0; r_it < R_side; r_it++) {
-        U2 *= this->get_link(site, nu);
-        site[this->array_dims[nu]] =
-            (site[this->array_dims[nu]] + 1) % this->dims[nu];
-      }
-
-      U4.set_identity();
-      site = {x, y, z, t};
-#pragma unroll
-      for (int r_it = 0; r_it < R_side; r_it++) {
-        U4 *= this->get_link(site, nu);
-        site[this->array_dims[nu]] =
-            (site[this->array_dims[nu]] + 1) % this->dims[nu];
-      }
-
-      U3.set_identity();
-#pragma unroll
-      for (int t_it = 0; t_it < T_side; t_it++) {
-        U3 *= this->get_link(site, mu);
-        site[this->array_dims[mu]] =
-            (site[this->array_dims[mu]] + 1) % this->dims[mu];
-      }
-
-      wloop_temporal += (U1 * U2 * dagger(U3) * dagger(U4)).retrace();
-    }
-  }
-
-  T get_wloop_temporal(bool Normalize = true) {
-    auto BulkPolicy = Kokkos::MDRangePolicy<wloop_temporal_s, Kokkos::Rank<4>>(
-        {0, 0, 0, 0}, {this->get_max_dim(0), this->get_max_dim(1),
-                       this->get_max_dim(2), this->get_max_dim(3)});
-    T wloop_temporal = 0.0;
-    Kokkos::parallel_reduce("wloop_temporal", BulkPolicy, *this,
-                            wloop_temporal);
-    if (Normalize)
-      wloop_temporal /= this->get_volume() * (Ndim - 1) * Nc;
-    return wloop_temporal;
-  }
-
   KOKKOS_INLINE_FUNCTION Group get_staple(const int &x, const int &y,
                                           const int &z, const int &t,
                                           const int &mu) const {
@@ -416,8 +352,7 @@ public:
     return wloop;
   }
 
-  T wloop_temporal(const int &Lmu, const int &Lnu,
-                       bool Normalize = true) {
+  T wloop_temporal(const int &Lmu, const int &Lnu, bool Normalize = true) {
     T wloop_temporal = 0.0;
     const int mu = Ndim - 1;
 #pragma unroll
@@ -526,7 +461,6 @@ public:
     return wloop_temporal_obc;
   }
 
-  // change name and fix %operatorion
   T wloop_np_obc(const int &x0, const int &y0, const int &z0, const int &mu,
                  const int &nu, const int &rho, const int &Lmu, const int &Lnu,
                  const int &Lrho, bool Normalize = true) {

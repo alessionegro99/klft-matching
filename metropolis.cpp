@@ -5,7 +5,7 @@ using real_t = double;
 
 int main(int argc, char **argv) {
   std::string gauge_group = "U1";
-  int ndim = 4;
+  int ndim = 3;
   size_t LX = 8;
   size_t LY = 8;
   size_t LZ = 8;
