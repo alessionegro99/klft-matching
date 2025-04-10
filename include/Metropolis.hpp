@@ -11,17 +11,16 @@ public:
   template <int odd_even> struct sweep_s {};
   GaugeFieldType gauge_field;
   RNG rng;
-  int n_hit;
+
   T beta;
   T delta;
 
   Metropolis() = default;
 
-  Metropolis(GaugeFieldType gauge_field, RNG &rng, const int &n_hit,
+  Metropolis(GaugeFieldType gauge_field, RNG &rng,
              const T &beta, const T &delta) {
     this->gauge_field = gauge_field;
     this->rng = rng;
-    this->n_hit = n_hit;
     this->beta = beta;
     this->delta = delta;
   }
@@ -54,31 +53,39 @@ public:
   KOKKOS_INLINE_FUNCTION void
   operator()(sweep_s<odd_even>, const int &x, const int &y, const int &z,
              const int &t, const int &mu, T &update) const {
+
     auto generator = rng.get_state();
     T num_accepted = 0.0;
     T delS = 0.0;
+
     const int tt = 2 * t + 1 * odd_even;
-    Group U = gauge_field.get_link(x, y, z, tt, mu);
+
     Group staple = gauge_field.get_staple(x, y, z, tt, mu);
-    Group tmp1 = U * staple;
     Group R;
-    for (int i = 0; i < n_hit; ++i) {
-      R.get_random(generator, delta);
-      Group U_new = U * R;
-      Group tmp2 = U_new * staple;
-      delS = (beta / static_cast<T>(gauge_field.get_Nc())) *
-             (tmp1.retrace() - tmp2.retrace());
-      bool accept = delS < 0.0;
-      if (!accept) {
-        T r = generator.drand(0.0, 1.0);
-        accept = r < Kokkos::exp(-delS);
-      }
-      if (accept) {
-        U_new.restoreGauge();
-        gauge_field.set_link(x, y, z, tt, mu, U_new);
-        num_accepted += 1.0;
-      }
+    Group U = gauge_field.get_link(x, y, z, tt, mu);
+    Group tmp1 = U * staple;
+
+    R.get_random(generator, delta);
+
+    Group U_new = U * R;
+    Group tmp2 = U_new * staple;
+
+    delS = (beta / static_cast<T>(gauge_field.get_Nc())) *
+           (tmp1.retrace() - tmp2.retrace());
+
+    bool accept = delS < 0.0;
+
+    if (!accept) {
+      T r = generator.drand(0.0, 1.0);
+      accept = r < Kokkos::exp(-delS);
     }
+
+    if (accept) {
+      U_new.restoreGauge();
+      gauge_field.set_link(x, y, z, tt, mu, U_new);
+      num_accepted += 1.0;
+    }
+
     rng.free_state(generator);
     update += num_accepted;
   }
@@ -122,8 +129,7 @@ public:
     Kokkos::parallel_reduce("sweep_odd", BulkPolicy_odd, *this, accept);
     Kokkos::fence();
     accept_rate += accept;
-    return accept_rate /
-           (gauge_field.get_volume() * gauge_field.get_Ndim() * n_hit);
+    return accept_rate / (gauge_field.get_volume() * gauge_field.get_Ndim());
   }
 };
 } // namespace klft

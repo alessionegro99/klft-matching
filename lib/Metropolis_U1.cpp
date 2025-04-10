@@ -8,8 +8,8 @@ namespace klft {
 
 template <typename T>
 void Metropolis_U1_4D(const size_t &LX, const size_t &LY, const size_t &LZ,
-                      const size_t &LT, const size_t &n_hit, const T &beta,
-                      const T &delta, const size_t &seed, const size_t &n_sweep,
+                      const size_t &LT, const T &beta, const T &delta,
+                      const size_t &seed, const size_t &n_sweep,
                       const bool cold_start, const std::string &outfilename,
                       const bool open_bc[3]) {
   std::cout << "Running Metropolis_U1_4D" << std::endl;
@@ -21,7 +21,6 @@ void Metropolis_U1_4D(const size_t &LX, const size_t &LY, const size_t &LZ,
   std::cout << "Metropolis Parameters:" << std::endl;
   std::cout << "beta = " << beta << std::endl;
   std::cout << "delta = " << delta << std::endl;
-  std::cout << "n_hit = " << n_hit << std::endl;
   std::cout << "n_sweep = " << n_sweep << std::endl;
   std::cout << "seed = " << seed << std::endl;
   std::cout << "start condition = " << (cold_start ? "cold" : "hot")
@@ -40,7 +39,7 @@ void Metropolis_U1_4D(const size_t &LX, const size_t &LY, const size_t &LZ,
     RNG rng = RNG(seed);
     GaugeFieldType gauge_field = GaugeFieldType(LX, LY, LZ, LT);
     Metropolis<T, Group, GaugeFieldType, RNG> metropolis =
-        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, n_hit, beta,
+        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, beta,
                                                   delta);
     metropolis.initGauge(cold_start);
     if (open_bc[0])
@@ -78,12 +77,12 @@ void Metropolis_U1_4D(const size_t &LX, const size_t &LY, const size_t &LZ,
 
 template <typename T>
 void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
-                      const size_t &n_hit, const T &beta, const T &delta,
-                      const size_t &seed, const size_t &n_sweep,
-                      const size_t &n_meas, const bool cold_start,
-                      const std::string &outfilename, const bool open_bc[3],
-                      const int v0[3], const bool non_planar, const size_t &Wt,
-                      const size_t &Ws, const bool &verbose) {
+                      const T &beta, const T &delta, const size_t &seed,
+                      const size_t &n_sweep, const size_t &n_meas,
+                      const bool cold_start, const std::string &outfilename,
+                      const bool open_bc[3], const int v0[3],
+                      const bool non_planar, const size_t &Wt, const size_t &Ws,
+                      const bool &verbose) {
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
   std::cout << "LX = " << LX << std::endl;
@@ -92,7 +91,6 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   std::cout << "Metropolis Parameters:" << std::endl;
   std::cout << "beta = " << beta << std::endl;
   std::cout << "delta = " << delta << std::endl;
-  std::cout << "n_hit = " << n_hit << std::endl;
   std::cout << "n_sweep = " << n_sweep << std::endl;
   std::cout << "n_meas = " << n_meas << std::endl;
   std::cout << "seed = " << seed << std::endl;
@@ -109,8 +107,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   if (open_bc[2])
     std::cout << "z0 = " << v0[2] << std::endl;
   std::cout << "non_planar = " << non_planar << std::endl;
-  std::cout << "max T Wilson loop = " << Wt << std::endl;
-  std::cout << "max R Wilson loop = " << Ws << std::endl;
+  std::cout << "Wt Wilson loop W(Wt,Ws) = " << Wt << std::endl;
+  std::cout << "Ws Wilson loop W(Wt,Ws) = " << Ws << std::endl;
   std::cout << "verbose output = " << verbose << std::endl;
   std::ofstream outfile;
   if (outfilename != "") {
@@ -123,7 +121,6 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     outfile << "Metropolis Parameters:" << "\n";
     outfile << "beta = " << beta << "\n";
     outfile << "delta = " << delta << "\n";
-    outfile << "n_hit = " << n_hit << "\n";
     outfile << "n_sweep = " << n_sweep << "\n";
     outfile << "n_meas = " << n_meas << "\n";
     outfile << "seed = " << seed << "\n";
@@ -139,8 +136,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     if (open_bc[2])
       outfile << "z0 = " << v0[2] << "\n";
     outfile << "non_planar = " << non_planar << "\n";
-    outfile << "max T Wilson loop = " << Wt << "\n";
-    outfile << "max R Wilson loop = " << Ws << "\n";
+    outfile << "Wt Wilson loop W(Wt,Ws) = " << Wt << "\n";
+    outfile << "W Wilson loop W(Wt,Ws) = " << Ws << "\n";
     outfile << "verbose output = " << verbose << "\n";
 
     outfile << "step plaquette acceptance_rate time "; // header line
@@ -150,13 +147,13 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
           for (int k = 1; k < std::min(LX, LY); k++) {
             for (int l = 0; l < k; l++) {
               if (sqrt(k * k + l * l) < Ws)
-                outfile << "W(Ws=" << sqrt(k * k + l * l) << ",Wt=" << j
+                outfile << "W(Wt=" << j << ",Wt=" << sqrt(k * k + l * l)
                         << ") ";
             }
           }
         } else if (!non_planar) {
           for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-            outfile << "W(Ws=" << k << ", Wt=" << j << ") ";
+            outfile << "W(Wt=" << j << ", Ws=" << k << ") ";
           }
         }
       }
@@ -165,7 +162,7 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
       if (!non_planar) {
         for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
           for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-            outfile << "W(Ws=" << k << ",Wt=" << j << ") ";
+            outfile << "W(Wt=" << j << ",Ws=" << k << ") ";
           }
         }
         outfile << std::endl;
@@ -180,7 +177,7 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     RNG rng = RNG(seed);
     GaugeFieldType gauge_field = GaugeFieldType(LX, LY, LT);
     Metropolis<T, Group, GaugeFieldType, RNG> metropolis =
-        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, n_hit, beta,
+        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, beta,
                                                   delta);
     metropolis.initGauge(cold_start);
     if (open_bc[0])
@@ -196,12 +193,12 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     std::cout << "Starting Wilson loops: " << std::endl;
     for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
       for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-        std::cout << "W(Ws=" << k << ",Wt=" << j << ") ";
+        std::cout << "W(Wt=" << j << ",Ws=" << k << ") ";
       }
     }
     std::cout << "\n";
-    for (int j = 1; j <= std::min(LT-1, Wt); j++) {
-      for (int k = 1; k <= std::min({LX-1, LY-1, Ws}); k++) {
+    for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
+      for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
         std::cout << gauge_field.wloop_temporal(j, k) << " ";
       }
     }
@@ -251,8 +248,8 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
             outfile << std::endl;
           } else if (!open_bc[0] && !open_bc[1]) {
             if (!non_planar) {
-              for (int j = 1; j <= std::min(LT-1, Wt); j++) {
-                for (int k = 1; k <= std::min({LX-1, LY-1, Ws}); k++) {
+              for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
+                for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
                   outfile << " " << gauge_field.wloop_temporal(j, k);
                 }
               }
@@ -273,10 +270,10 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   outfile.close();
 }
 template <typename T>
-void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
-                      const T &beta, const T &delta, const size_t &seed,
-                      const size_t &n_sweep, const bool cold_start,
-                      const std::string &outfilename, const bool open_bc[3]) {
+void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const T &beta,
+                      const T &delta, const size_t &seed, const size_t &n_sweep,
+                      const bool cold_start, const std::string &outfilename,
+                      const bool open_bc[3]) {
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
   std::cout << "LX = " << LX << std::endl;
@@ -284,7 +281,6 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   std::cout << "Metropolis Parameters:" << std::endl;
   std::cout << "beta = " << beta << std::endl;
   std::cout << "delta = " << delta << std::endl;
-  std::cout << "n_hit = " << n_hit << std::endl;
   std::cout << "n_sweep = " << n_sweep << std::endl;
   std::cout << "seed = " << seed << std::endl;
   std::cout << "start condition = " << (cold_start ? "cold" : "hot")
@@ -306,7 +302,7 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
     RNG rng = RNG(seed);
     GaugeFieldType gauge_field = GaugeFieldType(LX, LT);
     Metropolis<T, Group, GaugeFieldType, RNG> metropolis =
-        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, n_hit, beta,
+        Metropolis<T, Group, GaugeFieldType, RNG>(gauge_field, rng, beta,
                                                   delta);
     metropolis.initGauge(cold_start);
     if (open_bc[0])
@@ -338,51 +334,49 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   outfile.close();
 }
 
-template void Metropolis_U1_4D<float>(
-    const size_t &LX, const size_t &LY, const size_t &LZ, const size_t &LT,
-    const size_t &n_hit, const float &beta, const float &delta,
-    const size_t &seed, const size_t &n_sweep, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3]);
-
-template void Metropolis_U1_4D<double>(
-    const size_t &LX, const size_t &LY, const size_t &LZ, const size_t &LT,
-    const size_t &n_hit, const double &beta, const double &delta,
-    const size_t &seed, const size_t &n_sweep, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3]);
-;
-
-template void Metropolis_U1_3D<float>(
-    const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
-    const float &beta, const float &delta, const size_t &seed,
-    const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const bool non_planar, const size_t &Wt, const size_t &Ws,
-    const bool &verbose);
-
-template void Metropolis_U1_3D<double>(
-    const size_t &LX, const size_t &LY, const size_t &LT, const size_t &n_hit,
-    const double &beta, const double &delta, const size_t &seed,
-    const size_t &n_sweep, const size_t &n_meas, const bool cold_start,
-    const std::string &outfilename, const bool open_bc[3], const int v0[3],
-    const bool non_planar, const size_t &Wt, const size_t &Ws,
-    const bool &verbose);
-;
-
-template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
-                                      const size_t &n_hit, const float &beta,
-                                      const float &delta, const size_t &seed,
-                                      const size_t &n_sweep,
+template void Metropolis_U1_4D<float>(const size_t &LX, const size_t &LY,
+                                      const size_t &LZ, const size_t &LT,
+                                      const float &beta, const float &delta,
+                                      const size_t &seed, const size_t &n_sweep,
                                       const bool cold_start,
                                       const std::string &outfilename,
                                       const bool open_bc[3]);
 
-template void Metropolis_U1_2D<double>(const size_t &LX, const size_t &LT,
-                                       const size_t &n_hit, const double &beta,
-                                       const double &delta, const size_t &seed,
-                                       const size_t &n_sweep,
-                                       const bool cold_start,
-                                       const std::string &outfilename,
-                                       const bool open_bc[3]);
+template void
+Metropolis_U1_4D<double>(const size_t &LX, const size_t &LY, const size_t &LZ,
+                         const size_t &LT, const double &beta,
+                         const double &delta, const size_t &seed,
+                         const size_t &n_sweep, const bool cold_start,
+                         const std::string &outfilename, const bool open_bc[3]);
+;
+
+template void Metropolis_U1_3D<float>(
+    const size_t &LX, const size_t &LY, const size_t &LT, const float &beta,
+    const float &delta, const size_t &seed, const size_t &n_sweep,
+    const size_t &n_meas, const bool cold_start, const std::string &outfilename,
+    const bool open_bc[3], const int v0[3], const bool non_planar,
+    const size_t &Wt, const size_t &Ws, const bool &verbose);
+
+template void Metropolis_U1_3D<double>(
+    const size_t &LX, const size_t &LY, const size_t &LT, const double &beta,
+    const double &delta, const size_t &seed, const size_t &n_sweep,
+    const size_t &n_meas, const bool cold_start, const std::string &outfilename,
+    const bool open_bc[3], const int v0[3], const bool non_planar,
+    const size_t &Wt, const size_t &Ws, const bool &verbose);
+;
+
+template void Metropolis_U1_2D<float>(const size_t &LX, const size_t &LT,
+                                      const float &beta, const float &delta,
+                                      const size_t &seed, const size_t &n_sweep,
+                                      const bool cold_start,
+                                      const std::string &outfilename,
+                                      const bool open_bc[3]);
+
+template void
+Metropolis_U1_2D<double>(const size_t &LX, const size_t &LT, const double &beta,
+                         const double &delta, const size_t &seed,
+                         const size_t &n_sweep, const bool cold_start,
+                         const std::string &outfilename, const bool open_bc[3]);
 ;
 
 } // namespace klft

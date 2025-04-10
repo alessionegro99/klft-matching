@@ -10,7 +10,6 @@ int main(int argc, char **argv) {
   size_t LY = 8;
   size_t LZ = 8;
   size_t LT = 16;
-  size_t n_hit = 100;
   real_t beta = 2.0;
   real_t delta = 0.05;
   size_t seed = 1234;
@@ -46,9 +45,6 @@ int main(int argc, char **argv) {
     }
     if (std::string(argv[i]) == "--LT") {
       LT = std::stoi(argv[i + 1]);
-    }
-    if (std::string(argv[i]) == "--n-hit") {
-      n_hit = std::stoi(argv[i + 1]);
     }
     if (std::string(argv[i]) == "--beta") {
       beta = std::stod(argv[i + 1]);
@@ -124,8 +120,8 @@ int main(int argc, char **argv) {
       std::cout << "--open-bc-t true or false" << std::endl;
       std::cout << "--x0(y0, z0) starting point for OBC Wloop" << std::endl;
       std::cout << "--non_planar Wilson loops true or false" << std::endl;
-      std::cout << "--Wt Wilson loop W(Ws,Wt)" << std::endl;
-      std::cout << "--Ws Wilson loop W(Ws,Wt)" << std::endl;
+      std::cout << "--Wt Wilson loop W(Wt,Ws)" << std::endl;
+      std::cout << "--Ws Wilson loop W(Wt,Ws)" << std::endl;
       std::cout << "--verbose true or false" << std::endl;
 
       return 0;
@@ -136,16 +132,16 @@ int main(int argc, char **argv) {
   int v0[3] = {x0, y0, z0};
 
   if (gauge_group == "U1" && ndim == 4)
-    klft::Metropolis_U1_4D<real_t>(LX, LY, LZ, LT, n_hit, beta, delta, seed,
+    klft::Metropolis_U1_4D<real_t>(LX, LY, LZ, LT, beta, delta, seed,
                                    n_sweep, cold_start, outfilename, open_bc);
 
   if (gauge_group == "U1" && ndim == 3)
-    klft::Metropolis_U1_3D<real_t>(LX, LY, LT, n_hit, beta, delta, seed,
+    klft::Metropolis_U1_3D<real_t>(LX, LY, LT, beta, delta, seed,
                                    n_sweep, n_meas, cold_start, outfilename,
                                    open_bc, v0, non_planar, Wt, Ws, verbose);
 
   if (gauge_group == "U1" && ndim == 2)
-    klft::Metropolis_U1_2D<real_t>(LX, LT, n_hit, beta, delta, seed, n_sweep,
+    klft::Metropolis_U1_2D<real_t>(LX, LT, beta, delta, seed, n_sweep,
                                    cold_start, outfilename, open_bc);
   return 0;
 }
