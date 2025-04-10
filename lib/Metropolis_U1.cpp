@@ -213,8 +213,6 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
                   << " Time: " << sweep_time.count() << std::endl;
       }
       if (outfilename != "") {
-        // outfile << "Aniket's 3x3 Wloop_temporal = " <<
-        // gauge_field.get_wloop_temporal() << "\n";
         if (!((i + 1) % n_meas) || (i == (n_sweep - 1))) {
           outfile << i + 1 << " " << plaquette << " " << acceptance_rate << " "
                   << sweep_time.count();
@@ -265,9 +263,7 @@ template <typename T>
 void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
                       const T &beta, const T &delta, const size_t &seed,
                       const size_t &n_sweep, const bool cold_start,
-                      const std::string &outfilename, const bool open_bc[3],
-                      const size_t &n_meas, const size_t &max_T_Wilson_loop,
-                      const size_t &max_R_Wilson_loop, const bool &verbose) {
+                      const std::string &outfilename, const bool open_bc[3]) {
   std::cout << "Running Metropolis_U1_3D" << std::endl;
   std::cout << "Gauge Field Dimensions:" << std::endl;
   std::cout << "LX = " << LX << std::endl;
@@ -278,7 +274,6 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   std::cout << "delta = " << delta << std::endl;
   std::cout << "n_hit = " << n_hit << std::endl;
   std::cout << "n_sweep = " << n_sweep << std::endl;
-  std::cout << "n_meas = " << n_meas << std::endl;
   std::cout << "seed = " << seed << std::endl;
   std::cout << "start condition = " << (cold_start ? "cold" : "hot")
             << std::endl;
@@ -286,14 +281,9 @@ void Metropolis_U1_2D(const size_t &LX, const size_t &LT, const size_t &n_hit,
   std::cout << "x0 = " << v0[0] << std::endl;
   std::cout << "y0 = " << v0[1] << std::endl;
   std::cout << "z0 = " << v0[2] << std::endl;
-  std::cout << "t0 = " << t0 << std::endl;
   std::cout << "open_bc_x = " << open_bc[0] << std::endl;
   std::cout << "open_bc_y = " << open_bc[1] << std::endl;
   std::cout << "open_bc_z = " << open_bc[2] << std::endl;
-  std::cout << "open_bc_t = " << open_bc_t << std::endl;
-  std::cout << "non_planar = " << non_planar << std::endl;
-  std::cout << "max T Wilson loop = " << max_T_Wilson_loop << std::endl;
-  std::cout << "max R Wilson loop = " << max_R_Wilson_loop << std::endl;
   std::cout << "verbose output = " << verbose << std::endl;
   std::ofstream outfile;
   if (outfilename != "") {

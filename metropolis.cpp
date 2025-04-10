@@ -4,7 +4,7 @@
 using real_t = double;
 
 int main(int argc, char **argv) {
-  std::string gauge_group = "SU2";
+  std::string gauge_group = "U1";
   int ndim = 4;
   size_t LX = 8;
   size_t LY = 8;
@@ -21,11 +21,9 @@ int main(int argc, char **argv) {
   bool open_bc_x = false;
   bool open_bc_y = false;
   bool open_bc_z = false;
-  bool open_bc_t = false;
   int x0 = 0;
   int y0 = 0;
   int z0 = 0;
-  int t0 = 0;
   bool non_planar = false;
   size_t max_T_Wilson_loop = 0;
   size_t max_R_Wilson_loop = 0;
@@ -82,9 +80,6 @@ int main(int argc, char **argv) {
     if (std::string(argv[i]) == "--open-bc-z") {
       open_bc_z = std::string(argv[i + 1]) == "true";
     }
-    if (std::string(argv[i]) == "--open-bc-t") {
-      open_bc_t = std::string(argv[i + 1]) == "true";
-    }
     if (std::string(argv[i]) == "--x0") {
       x0 = std::stoi(argv[i + 1]);
     }
@@ -93,9 +88,6 @@ int main(int argc, char **argv) {
     }
     if (std::string(argv[i]) == "--z0") {
       z0 = std::stoi(argv[i + 1]);
-    }
-    if (std::string(argv[i]) == "--t0") {
-      t0 = std::stoi(argv[i + 1]);
     }
     if (std::string(argv[i]) == "--non_planar") {
       non_planar = std::string(argv[i + 1]) == "true";
@@ -140,30 +132,22 @@ int main(int argc, char **argv) {
       return 0;
     }
   }
+
   bool open_bc[3] = {open_bc_x, open_bc_y, open_bc_z};
   int v0[3] = {x0, y0, z0};
-  // if(gauge_group == "SU2" && ndim == 4)
-  // klft::Metropolis_SU2_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU2" && ndim == 3)
-  // klft::Metropolis_SU2_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU2" && ndim == 2)
-  // klft::Metropolis_SU2_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
+
   if (gauge_group == "U1" && ndim == 4)
     klft::Metropolis_U1_4D<real_t>(LX, LY, LZ, LT, n_hit, beta, delta, seed,
                                    n_sweep, cold_start, outfilename, open_bc);
+
   if (gauge_group == "U1" && ndim == 3)
-    klft::Metropolis_U1_3D<real_t>(
-        LX, LY, LT, n_hit, beta, delta, seed, n_sweep, n_meas, cold_start,
-        outfilename, open_bc, open_bc_t, v0, t0, non_planar, max_T_Wilson_loop,
-        max_R_Wilson_loop, verbose);
+    klft::Metropolis_U1_3D<real_t>(LX, LY, LT, n_hit, beta, delta, seed,
+                                   n_sweep, n_meas, cold_start, outfilename,
+                                   open_bc, v0, non_planar, max_T_Wilson_loop,
+                                   max_R_Wilson_loop, verbose);
+
   if (gauge_group == "U1" && ndim == 2)
     klft::Metropolis_U1_2D<real_t>(LX, LT, n_hit, beta, delta, seed, n_sweep,
                                    cold_start, outfilename, open_bc);
-  // if(gauge_group == "SU3" && ndim == 4)
-  // klft::Metropolis_SU3_4D<real_t>(LX,LY,LZ,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU3" && ndim == 3)
-  // klft::Metropolis_SU3_3D<real_t>(LX,LY,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
-  // if(gauge_group == "SU3" && ndim == 2)
-  // klft::Metropolis_SU3_2D<real_t>(LX,LT,n_hit,beta,delta,seed,n_sweep,cold_start,outfilename,open_bc);
   return 0;
 }
