@@ -142,9 +142,9 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
 
     outfile << "step plaquette acceptance_rate time "; // header line
     if (open_bc[0] && open_bc[1]) {
-      for (int j = 1; j < std::min(LT, Wt); j++) {
+      for (int j = 1; j <= std::min(LT, Wt); j++) {
         if (non_planar) {
-          for (int k = 1; k < std::min(LX, LY); k++) {
+          for (int k = 1; k <= std::min(LX, LY); k++) {
             for (int l = 0; l < k; l++) {
               if (sqrt(k * k + l * l) < Ws)
                 outfile << "W(Wt=" << j << ",Wt=" << sqrt(k * k + l * l)
