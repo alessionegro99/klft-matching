@@ -224,37 +224,35 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
       }
       if (outfilename != "") {
         if (!((i % n_meas)) || (i == 1)) {
+
           outfile << i << " " << plaquette << " " << acceptance_rate << " "
                   << sweep_time.count();
+
           if (open_bc[0] && open_bc[1]) {
-            for (int j = 1; j <= std::min(LT, Wt); j++) {
-              if (non_planar) {
-                for (int k = 1; k < std::min(LX, LY); k++) {
+
+          }
+
+          else if (!open_bc[0] && !open_bc[1]) {
+
+            if (non_planar) {
+              for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
+                for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
                   for (int l = 0; l <= k; l++) {
-                    if (sqrt(k * k + l * l) < Ws)
-                      outfile << " "
-                              << gauge_field.wloop_np_temporal_obc(
-                                     v0[0], v0[1], v0[2], j, k, l);
+                    outfile << " " << gauge_field.wloop_np_temporal(j, k, l);
                   }
-                }
-              } else if (!non_planar) {
-                for (int k = 1; k <= std::min({LX, LY, Ws}); k++) {
-                  outfile << " "
-                          << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
-                                                            j, k);
                 }
               }
             }
-            outfile << std::endl;
-          } else if (!open_bc[0] && !open_bc[1]) {
-            if (!non_planar) {
+
+            else if (!non_planar) {
               for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
                 for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
                   outfile << " " << gauge_field.wloop_temporal(j, k);
                 }
               }
-              outfile << std::endl;
             }
+
+            outfile << std::endl;
           }
         }
       }

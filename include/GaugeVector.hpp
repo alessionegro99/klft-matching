@@ -215,41 +215,4 @@ namespace klft {
     }
 
   };
-
-  template <typename T, class Group, int Ndim, int Nc>
-  T get_W_loop_mu_nu(GaugeField<T,Group,Ndim,Nc> &gauge, const int &mu, const int &nu, const int &Lmu, const int &Lnu, const bool &Normalize = true) {
-    GaugeVector<T,Group,Ndim,Nc> U1(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> U2(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> U3(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> U4(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> tmp(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> Umu(gauge.dims);
-    GaugeVector<T,Group,Ndim,Nc> Unu(gauge.dims);
-    Umu.absorb_direction(gauge,mu);
-    U1.copy(Umu);
-    Unu.absorb_direction(gauge,nu);
-    U2.copy(Unu);
-    for(int i = 1; i < Lmu; ++i) {
-      Umu.shift_plus(tmp,mu,1);
-      U1.UxU(Umu);
-    }
-    for(int i = 1; i < Lnu; ++i) {
-      Unu.shift_plus(tmp,nu,1);
-      U2.UxU(Unu);
-    }
-    U3.copy(U1);
-    U4.copy(U2);
-    U2.shift_plus(tmp,mu,Lmu);
-    U1.UxU(U2);
-    U3.shift_plus(tmp,nu,Lnu);
-    U1.UxUdag(U3);
-    U1.UxUdag(U4);
-    T W = U1.sum_retrace();
-    if(Normalize) W  /= (gauge.get_volume()*gauge.get_Nc());
-    return W;
-  }
-
-  // observables
-  
-
 } // namespace klft
