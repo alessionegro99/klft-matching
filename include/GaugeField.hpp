@@ -440,21 +440,13 @@ public:
     T wloop_np_temporal = 0.0;
     const int mu = Ndim - 1;
 
-#pragma unroll
-    for (int nu = 0; nu < mu; ++nu) {
-      for (int rho = 0; rho < nu; ++rho) {
-        wloop_np_temporal += wloop_np(mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
-        wloop_np_temporal += wloop_np(mu, rho, nu, Lmu, Lrho, Lnu, Normalize);
-      }
-    }
-    for (int rho = 0; rho < mu; ++rho) {
-      for (int nu = 0; nu < rho; ++nu) {
-        wloop_np_temporal += wloop_np(mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
-        wloop_np_temporal += wloop_np(mu, rho, nu, Lmu, Lrho, Lnu, Normalize);
-      }
-    }
+    const int nu = Ndim - 2;
+    const int rho = Ndim - 3;
+
+    wloop_np_temporal += wloop_np(mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
+
     if (Normalize)
-      wloop_np_temporal /= (Ndim - 2) * (Ndim - 1) * 2;
+      wloop_np_temporal /= 1;
     return wloop_np_temporal;
   }
 
@@ -627,25 +619,14 @@ public:
     T wloop_np_temporal_obc = 0.0;
     const int mu = Ndim - 1;
 
-#pragma unroll
-    for (int nu = 0; nu < mu; ++nu) {
-      for (int rho = 0; rho < nu; ++rho) {
-        wloop_np_temporal_obc +=
-            wloop_np_obc(x0, y0, z0, mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
-        wloop_np_temporal_obc +=
-            wloop_np_obc(x0, y0, z0, mu, rho, nu, Lmu, Lrho, Lnu, Normalize);
-      }
-    }
-    for (int rho = 0; rho < mu; ++rho) {
-      for (int nu = 0; nu < rho; ++nu) {
-        wloop_np_temporal_obc +=
-            wloop_np_obc(x0, y0, z0, mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
-        wloop_np_temporal_obc +=
-            wloop_np_obc(x0, y0, z0, mu, rho, nu, Lmu, Lrho, Lnu, Normalize);
-      }
-    }
+    const int nu = Ndim - 2;
+    const int rho = Ndim - 3;
+
+    wloop_np_temporal_obc +=
+        wloop_np_obc(x0, y0, z0, mu, nu, rho, Lmu, Lnu, Lrho, Normalize);
+
     if (Normalize)
-      wloop_np_temporal_obc /= (Ndim - 2) * (Ndim - 1) * 2;
+      wloop_np_temporal_obc /= 1;
     return wloop_np_temporal_obc;
   }
 

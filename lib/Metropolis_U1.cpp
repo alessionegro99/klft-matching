@@ -1,8 +1,8 @@
 #include "../include/Metropolis.hpp"
 #include "../include/klft.hpp"
 #include <algorithm>
+#include <cmath>
 #include <fstream>
-#include <iostream>
 
 namespace klft {
 
@@ -111,6 +111,13 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
   std::cout << "Ws Wilson loop W(Wt,Ws) = " << Ws << std::endl;
   std::cout << "verbose output = " << verbose << std::endl;
   std::ofstream outfile;
+
+  int limit_t, limit_s;
+  double total;
+
+  limit_t = std::min(LT - 1, Wt);
+  limit_s = std::min({LX - 1, LY - 1, Ws});
+
   if (outfilename != "") {
     outfile.open(outfilename); // print all the parameters to the output file
     outfile << "Running Metropolis_U1_3D" << "\n";
@@ -142,31 +149,53 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
 
     outfile << "step plaquette acceptance_rate time "; // header line
     if (open_bc[0] && open_bc[1]) {
-      for (int j = 1; j <= std::min(LT, Wt); j++) {
-        if (non_planar) {
-          for (int k = 1; k < std::min(LX, LY); k++) {
+
+      if (non_planar) {
+        for (int j = 1; j <= limit_t; j++) {
+          for (int k = 1; k <= limit_s; k++) {
             for (int l = 0; l <= k; l++) {
-              if (sqrt(k * k + l * l) < Ws)
-                outfile << "W(Wt=" << j << ",Ws=" << sqrt(k * k + l * l)
-                        << ") ";
+              total = std::sqrt(k * k + l * l);
+              if (total <= limit_s)
+                outfile << "W(Wt=" << j << ",Ws=" << total << ") ";
             }
-          }
-        } else if (!non_planar) {
-          for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-            outfile << "W(Wt=" << j << ", Ws=" << k << ") ";
           }
         }
       }
-      outfile << std::endl;
-    } else if (!open_bc[0] && !open_bc[1]) {
+
       if (!non_planar) {
-        for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
-          for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
+        for (int j = 1; j <= limit_t; j++) {
+          for (int k = 1; k <= limit_s; k++) {
             outfile << "W(Wt=" << j << ",Ws=" << k << ") ";
           }
         }
-        outfile << std::endl;
       }
+
+      outfile << std::endl;
+    }
+
+    else if (!open_bc[0] && !open_bc[1]) {
+
+      if (non_planar) {
+        for (int j = 1; j <= limit_t; j++) {
+          for (int k = 1; k <= limit_s; k++) {
+            for (int l = 0; l <= k; l++) {
+              total = std::sqrt(k * k + l * l);
+              if (total <= limit_s)
+                outfile << "W(Wt=" << j << ",Ws=" << total << ") ";
+            }
+          }
+        }
+      }
+
+      if (!non_planar) {
+        for (int j = 1; j <= limit_t; j++) {
+          for (int k = 1; k <= limit_s; k++) {
+            outfile << "W(Wt=" << j << ",Ws=" << k << ") ";
+          }
+        }
+      }
+
+      outfile << std::endl;
     }
   }
   Kokkos::initialize();
@@ -187,19 +216,32 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
     if (open_bc[0] && open_bc[1])
       std::cout << "Starting Plaquette: " << gauge_field.get_plaquette_obc()
                 << std::endl;
-    else
+    else {
       std::cout << "Starting Plaquette: " << gauge_field.get_plaquette()
                 << std::endl;
-    std::cout << "Starting Wilson loops: " << std::endl;
-    for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
-      for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-        std::cout << "W(Wt=" << j << ",Ws=" << k << ") ";
+
+      std::cout << "Starting Wilson loops: " << std::endl;
+
+      for (int j = 1; j <= limit_t; j++) {
+        for (int k = 1; k <= limit_s; k++) {
+          for (int l = 0; l <= k; l++) {
+            total = std::sqrt(k * k + l * l);
+            if (total <= limit_s)
+              std::cout << "W(Wt=" << j << ",Ws=" << total << ") ";
+          }
+        }
       }
-    }
-    std::cout << "\n";
-    for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
-      for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
-        std::cout << gauge_field.wloop_temporal(j, k) << " ";
+
+      std::cout << "\n";
+
+      for (int j = 1; j <= limit_t; j++) {
+        for (int k = 1; k <= limit_s; k++) {
+          for (int l = 0; l <= k; l++) {
+            total = std::sqrt(k * k + l * l);
+            if (total <= limit_s)
+              std::cout << gauge_field.wloop_np_temporal(j, k, l) << " ";
+          }
+        }
       }
     }
     std::cout << "\n";
@@ -230,23 +272,51 @@ void Metropolis_U1_3D(const size_t &LX, const size_t &LY, const size_t &LT,
 
           if (open_bc[0] && open_bc[1]) {
 
-          }
-
-          else if (!open_bc[0] && !open_bc[1]) {
-
             if (non_planar) {
-              for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
-                for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
+              for (int j = 1; j <= limit_t; j++) {
+                for (int k = 1; k <= limit_s; k++) {
                   for (int l = 0; l <= k; l++) {
-                    outfile << " " << gauge_field.wloop_np_temporal(j, k, l);
+                    total = sqrt(k * k + l * l);
+                    if (total <= limit_s)
+                      outfile << " "
+                              << gauge_field.wloop_np_temporal_obc(
+                                     v0[0], v0[1], v0[2], j, k, l);
                   }
                 }
               }
             }
 
             else if (!non_planar) {
-              for (int j = 1; j <= std::min(LT - 1, Wt); j++) {
-                for (int k = 1; k <= std::min({LX - 1, LY - 1, Ws}); k++) {
+              for (int j = 1; j <= limit_t; j++) {
+                for (int k = 1; k <= limit_s; k++) {
+                  outfile << " "
+                          << gauge_field.wloop_temporal_obc(v0[0], v0[1], v0[2],
+                                                            j, k);
+                }
+              }
+            }
+
+            outfile << std::endl;
+
+          }
+
+          else if (!open_bc[0] && !open_bc[1]) {
+
+            if (non_planar) {
+              for (int j = 1; j <= limit_t; j++) {
+                for (int k = 1; k <= limit_s; k++) {
+                  for (int l = 0; l <= k; l++) {
+                    total = sqrt(k * k + l * l);
+                    if (total <= limit_s)
+                      outfile << " " << gauge_field.wloop_np_temporal(j, k, l);
+                  }
+                }
+              }
+            }
+
+            else if (!non_planar) {
+              for (int j = 1; j <= limit_t; j++) {
+                for (int k = 1; k <= limit_s; k++) {
                   outfile << " " << gauge_field.wloop_temporal(j, k);
                 }
               }
